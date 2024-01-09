@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import TweetText from "./TweetText";
 import { useEffect, useState } from "react";
 import Like from "./buttons/Like";
-import ReplyAsPost from "./buttons/ReplyAsPost";
+import Reply from "./buttons/Reply";
 import Retweet from "./buttons/Retweet";
 import { useSelector } from "react-redux";
 import { selectUserInfo } from "../redux/userInfoSlice";
@@ -10,16 +10,6 @@ import { selectUserInfo } from "../redux/userInfoSlice";
 export default function RepliesResult({ tweet }) {
   const userInfo = useSelector(selectUserInfo);
   console.log(tweet);
-  const [likeCount, setLikeCount] = useState(0);
-
-  useEffect(() => {
-    if (tweet && tweet.likes) {
-      setLikeCount(tweet.likes.length);
-      console.log("Like Count Updated:", tweet.likes.length);
-    }
-  }, [tweet]);
-
-  useEffect(() => {}, [likeCount]);
 
   const formatTimeDifference = () => {
     const now = new Date();
@@ -77,9 +67,9 @@ export default function RepliesResult({ tweet }) {
           padding: "10px",
         }}
       >
-        <ReplyAsPost />
-        <Retweet />
-        <Like userId={userInfo.id} tweetId={tweet.id} likes={likeCount} />
+        <Reply userId={userInfo.id} tweetId={tweet.id} />
+        <Retweet userId={userInfo.id} tweetId={tweet.id} />
+        <Like userId={userInfo.id} tweetId={tweet.id} />
       </div>
     </div>
   );

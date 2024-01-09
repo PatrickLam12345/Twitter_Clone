@@ -167,7 +167,6 @@ const postReply = async (req, res, next) => {
 };
 
 const hasLiked = async (req, res, next) => {
-  console.log(req.query);
   const { userId, tweetId } = req.query;
 
   try {
@@ -240,6 +239,79 @@ const dislike = async (req, res, next) => {
   }
 };
 
+const hasRetweeted = async (req, res, next) => {
+  const { userId, tweetId } = req.query;
+
+  try {
+    const existingRetweet = await prisma.retweet.findUnique({
+      where: {
+        userId_tweetId: {
+          userId: Number(userId),
+          tweetId: Number(tweetId),
+        },
+      },
+    });
+
+    const userHasRetweeted = !!existingRetweet;
+
+    res.json({ hasRetweeted: userHasRetweeted });
+  } catch (error) {
+    console.error("Error checking like status:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const getRetweetCount = async (req, res, next) => {
+  const { tweetId } = req.query;
+
+  try {
+    const retweetCount = await prisma.retweet.count({
+      where: {
+        tweetId: Number(tweetId),
+      },
+    });
+
+    res.json({ retweetCount });
+  } catch (error) {
+    console.error("Error getting like count:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const retweet = async (req, res, next) => {
+  const { userId, tweetId } = req.body;
+  try {
+    const newRetweet = await prisma.retweet.create({
+      data: {
+        userId,
+        tweetId,
+      },
+    });
+    res.status(201).json(newRetweet);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const deleteRetweet = async (req, res, next) => {
+  const { userId, tweetId } = req.body;
+  try {
+    const deletedRetweet = await prisma.retweet.delete({
+      where: {
+        userId_tweetId: {
+          userId: Number(userId),
+          tweetId: Number(tweetId),
+        },
+      },
+    });
+
+    res.status(200).json(deletedRetweet);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 const follow = async (req, res, next) => {
   const { followerId, followingId } = req.body;
   const existingFollow = await prisma.follower.findUnique({
@@ -299,6 +371,11 @@ module.exports = {
   getLikeCount,
   like,
   dislike,
+
+  hasRetweeted,
+  getRetweetCount,
+  retweet,
+  deleteRetweet,
 
   follow,
   unfollow,

@@ -6,9 +6,9 @@ import { selectUserInfo } from "../../redux/userInfoSlice";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { red } from "@mui/material/colors";
 
-export default function Like({ userId, tweetId, likes }) {
+export default function Like({ userId, tweetId }) {
   const [liked, setLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(0);
+  const [likes, setLikes] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const handleMouseEnter = () => {
     setIsHovered(true);
@@ -19,10 +19,6 @@ export default function Like({ userId, tweetId, likes }) {
   };
 
   useEffect(() => {
-    console.log(likes);
-    console.log(likeCount);
-    console.log(userId, "WTF");
-    console.log(tweetId);
     const getLikedStatus = async () => {
       try {
         const response = await axios.get(
@@ -60,7 +56,7 @@ export default function Like({ userId, tweetId, likes }) {
             },
           }
         );
-        setLikeCount(response.data.likeCount);
+        setLikes(response.data.likeCount);
       } catch (error) {
         console.log(error);
       }
@@ -85,7 +81,7 @@ export default function Like({ userId, tweetId, likes }) {
       );
       if (response.status == 201) {
         setLiked(true);
-        setLikeCount((prevLikes) => prevLikes + 1);
+        setLikes((prevLikes) => prevLikes + 1);
       }
     } catch (error) {
       console.log(error);
@@ -107,7 +103,7 @@ export default function Like({ userId, tweetId, likes }) {
         }
       );
       setLiked(false);
-      setLikeCount((prevLikes) => prevLikes - 1);
+      setLikes((prevLikes) => prevLikes - 1);
     } catch (error) {
       console.log(error);
     }
@@ -120,7 +116,7 @@ export default function Like({ userId, tweetId, likes }) {
       }}
       style={{ display: "flex", alignItems: "center" }}
     >
-      <FavoriteIcon sx={{ color: red[500], marginRight: "6px" }} /> {likeCount}
+      <FavoriteIcon sx={{ color: red[500], marginRight: "6px" }} /> {likes}
     </div>
   ) : (
     <div
@@ -129,7 +125,7 @@ export default function Like({ userId, tweetId, likes }) {
       }}
       style={{ display: "flex", alignItems: "center" }}
     >
-      <FavoriteBorderIcon sx={{ marginRight: "6px" }} /> {likeCount}
+      <FavoriteBorderIcon sx={{ marginRight: "6px" }} /> {likes}
     </div>
   );
 }

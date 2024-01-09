@@ -16,6 +16,11 @@ router.get('/getLikeCount', authMiddleware.authenticateToken, userControllers.ge
 router.post('/like', authMiddleware.authenticateToken, userControllers.like)
 router.delete('/dislike', authMiddleware.authenticateToken, userControllers.dislike)
 
+router.get('/hasRetweeted', authMiddleware.authenticateToken, userControllers.hasRetweeted)
+router.get('/getRetweetCount', authMiddleware.authenticateToken, userControllers.getRetweetCount)
+router.post('/retweet', authMiddleware.authenticateToken, userControllers.retweet)
+router.delete('/deleteRetweet', authMiddleware.authenticateToken, userControllers.deleteRetweet)
+
 router.post('/follow', authMiddleware.authenticateToken, userControllers.follow)
 router.delete('/unfollow', authMiddleware.authenticateToken, userControllers.unfollow)
 

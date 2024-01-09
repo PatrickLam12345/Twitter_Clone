@@ -25,6 +25,16 @@ model User {
   recommendedPosts RecommendedPost[]
 }
 
+model Follower {
+  id            Int      @id @default(autoincrement())
+  followerId    Int
+  followingId   Int
+  followDate    DateTime @default(now())
+  followingUser User     @relation(fields: [followingId], references: [id])
+
+  @@unique([followerId, followingId])
+}
+
 model Tweet {
   id              Int       @id @default(autoincrement())
   userId          Int
@@ -38,14 +48,25 @@ model Tweet {
   mentions        Mention[]
 }
 
-model Follower {
-  id            Int      @id @default(autoincrement())
-  followerId    Int
-  followingId   Int
-  followDate    DateTime @default(now())
-  followingUser User     @relation(fields: [followingId], references: [id])
+model Mention {
+  id              Int      @id @default(autoincrement())
+  userId          Int
+  tweetId         Int
+  mentionedUserId Int
+  date            DateTime @default(now())
+  tweet           Tweet    @relation(fields: [tweetId], references: [id])
+  mentionedUser   User     @relation(fields: [mentionedUserId], references: [id])
+}
 
-  @@unique([followerId, followingId])
+model Retweet {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  tweetId       Int
+  date          DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id])
+  originalTweet Tweet    @relation(fields: [tweetId], references: [id])
+
+  @@unique([userId, tweetId])
 }
 
 model Like {
@@ -57,27 +78,6 @@ model Like {
   tweet   Tweet    @relation(fields: [tweetId], references: [id])
 
   @@unique([userId, tweetId])
-}
-
-model Retweet {
-  id              Int      @id @default(autoincrement())
-  userId          Int
-  originalTweetId Int
-  date            DateTime @default(now())
-  user            User     @relation(fields: [userId], references: [id])
-  originalTweet   Tweet    @relation(fields: [originalTweetId], references: [id])
-
-  @@unique([userId, originalTweetId])
-}
-
-model Mention {
-  id              Int      @id @default(autoincrement())
-  userId          Int
-  tweetId         Int
-  mentionedUserId Int
-  date            DateTime @default(now())
-  tweet           Tweet    @relation(fields: [tweetId], references: [id])
-  mentionedUser   User     @relation(fields: [mentionedUserId], references: [id])
 }
 
 model RecommendedPost {

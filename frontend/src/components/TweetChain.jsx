@@ -2,7 +2,7 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import TweetText from "../helper/TweetText";
-import ReplyAsPost from "../helper/buttons/ReplyAsPost";
+import Reply from "../helper/buttons/Reply";
 import Retweet from "../helper/buttons/Retweet";
 import Like from "../helper/buttons/Like";
 import ReplyBox from "../helper/ReplyBox";
@@ -16,16 +16,6 @@ export default function TweetChain() {
   const [tweet, setTweet] = useState(null);
   const [fetchRepliesTrigger, setFetchRepliesTrigger] = useState(false);
   const { tweetId } = useParams();
-  const [likeCount, setLikeCount] = useState(0);
-
-  useEffect(() => {
-    if (tweet && tweet.likes) {
-      setLikeCount(tweet.likes.length);
-      console.log("Like Count Updated:", tweet.likes.length);
-    }
-  }, [tweet]);
-
-  useEffect(() => {}, [likeCount]);
 
   const navigate = useNavigate();
   const navProfile = (username) => {
@@ -151,9 +141,9 @@ export default function TweetChain() {
                 padding: "10px",
               }}
             >
-              <ReplyAsPost />
-              <Retweet />
-              <Like userId={userInfo.id} tweetId={tweet.id} likes={likeCount} />
+              <Reply userId={userInfo.id} tweetId={tweet.id} />
+              <Retweet userId={userInfo.id} tweetId={tweet.id} />
+              <Like userId={userInfo.id} tweetId={tweet.id} />
             </div>
             <ReplyBox
               onPost={onReplyBoxPost}
