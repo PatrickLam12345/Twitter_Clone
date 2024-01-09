@@ -48,11 +48,13 @@ model Reply {
 }
 
 model Follower {
-  id      Int      @id @default(autoincrement())
-  followerUserId  Int
-  followingUserId Int
-  followDate      DateTime @default(now())
-  followingUser   User     @relation(fields: [followingUserId], references: [id])
+  id            Int      @id @default(autoincrement())
+  followerId    Int
+  followingId   Int
+  followDate    DateTime @default(now())
+  followingUser User     @relation(fields: [followingId], references: [id])
+
+  @@unique([followerId, followingId])
 }
 
 model Like {

@@ -16,6 +16,8 @@ import Messages from "./components/Messages";
 import Notifications from "./components/Notifications";
 import Profile from "./components/Profile";
 import Tweet from "./components/Tweet";
+import TweetChain from "./components/TweetChain";
+
 import { selectUserInfo, setUserInfo } from "./redux/userInfoSlice";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -50,12 +52,12 @@ export default function App() {
           element: <Messages />,
         },
         {
-          path: "/profile",
+          path: "/:username",
           element: <Profile />,
         },
         {
-          path: "/tweet",
-          element: <Tweet />,
+          path: "/tweet/:tweetId",
+          element: <TweetChain />,
         },
         {
           path: "/login",

@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 export default function TweetResult({ tweet }) {
   const formatTimeDifference = () => {
     const now = new Date();
@@ -19,12 +21,28 @@ export default function TweetResult({ tweet }) {
     }
   };
 
+  const navigate = useNavigate();
+  const getTweetChain = (tweetId) => {
+    navigate(`/tweet/${tweetId}`);
+  };
+
+  const retweet = (e, tweetId) => {
+    e.stopPropagation();
+  };
+
+  const like = (e, tweetId) => {
+    e.stopPropagation();
+  };
+
   return (
     <div
       style={{
         boxSizing: "border-box",
         border: "1px solid #333",
         borderTop: "none",
+      }}
+      onClick={() => {
+        getTweetChain(tweet.id);
       }}
     >
       <div style={{ padding: "10px" }}>
@@ -36,6 +54,38 @@ export default function TweetResult({ tweet }) {
           <span style={{ marginLeft: "5px" }}>- {formatTimeDifference()}</span>
         </p>
         <p>{tweet.text}</p>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          padding: "10px",
+        }}
+      >
+        <button
+          style={{ flex: 1, marginRight: "5px" }}
+          onClick={() => {
+            getTweetChain(tweet.id);
+          }}
+        >
+          Button 1
+        </button>
+        <button
+          style={{ flex: 1, marginRight: "5px" }}
+          onClick={(e) => {
+            retweet(e, tweet.id);
+          }}
+        >
+          Button 2
+        </button>
+        <button
+          style={{ flex: 1 }}
+          onClick={(e) => {
+            like(e, tweet.id);
+          }}
+        >
+          Button 3
+        </button>
       </div>
     </div>
   );

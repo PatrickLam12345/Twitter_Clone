@@ -1,4 +1,5 @@
 const { PrismaClient } = require("@prisma/client");
+const { userInfo } = require("os");
 const prisma = new PrismaClient();
 
 const postTweet = async (req, res, next) => {
@@ -76,12 +77,12 @@ const getMoreUsers = async (req, res, next) => {
       userResults.map(async (user) => {
         const isFollowing = await prisma.follower.findFirst({
           where: {
-            followerUserId: userId,
-            followingUserId: user.id,
+            followerId: Number(userId),
+            followingId: user.id,
           },
         });
-
-        return { ...user, isFollowing: !!isFollowing };
+        const isFollowingValue = !!isFollowing || user.id === Number(userId);
+        return { ...user, isFollowing: isFollowingValue };
       })
     );
     res.json(usersWithFollowStatus);
@@ -91,11 +92,56 @@ const getMoreUsers = async (req, res, next) => {
   }
 };
 
-const follow = async (req, res, next) => {};
+const follow = async (req, res, next) => {
+  const { followerId, followingId } = req.body;
+  const existingFollow = await prisma.follower.findUnique({
+    where: {
+      followerId_followingId: {
+        followerId,
+        followingId,
+      },
+    },
+  });
+
+  if (existingFollow) {
+    return res.status(400).json({ error: "Already following this user." });
+  }
+
+  const newFollow = await prisma.follower.create({
+    data: {
+      followerId,
+      followingId,
+    },
+  });
+
+  res.status(201).json(newFollow);
+};
+
+const unfollow = async (req, res, user) => {
+  try {
+    const { followerId, followingId } = req.body;
+
+    // Send a DELETE request to the server
+    await prisma.follower.delete({
+      where: {
+        followerId_followingId: {
+          followerId,
+          followingId,
+        },
+      },
+    });
+
+    res.status(200).json({ message: "Successfully unfollowed the user." });
+  } catch (error) {
+    console.error("Error during unfollow:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
 module.exports = {
   postTweet,
   getMoreTweets,
   getMoreUsers,
-  follow
+  follow,
+  unfollow,
 };
