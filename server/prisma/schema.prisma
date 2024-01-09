@@ -1,0 +1,92 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               Int               @id @default(autoincrement())
+  username         String            @unique
+  displayName      String
+  password         String
+  email            String            @unique
+  registrationDate DateTime          @default(now())
+  followers        Follower[]
+  tweets           Tweet[]
+  likes            Like[]
+  retweets         Retweet[]
+  mentions         Mention[]
+  replies          Reply[]
+  recommendedPosts RecommendedPost[]
+}
+
+model Tweet {
+  id       Int       @id @default(autoincrement())
+  userId   Int
+  text     String
+  date     DateTime  @default(now())
+  user     User      @relation(fields: [userId], references: [id])
+  likes    Like[]
+  retweets Retweet[]
+  mentions Mention[]
+  replies  Reply[]
+}
+
+model Reply {
+  id              Int      @id @default(autoincrement())
+  userId          Int
+  originalTweetId Int
+  date            DateTime @default(now())
+  user            User     @relation(fields: [userId], references: [id])
+  originalTweet   Tweet    @relation(fields: [originalTweetId], references: [id])
+}
+
+model Follower {
+  followerId      Int      @id @default(autoincrement())
+  followerUserId  Int
+  followingUserId Int
+  followDate      DateTime @default(now())
+  followingUser   User     @relation(fields: [followingUserId], references: [id])
+}
+
+model Like {
+  id      Int      @id @default(autoincrement())
+  userId  Int
+  tweetId Int
+  date    DateTime @default(now())
+  user    User     @relation(fields: [userId], references: [id])
+  tweet   Tweet    @relation(fields: [tweetId], references: [id])
+}
+
+model Retweet {
+  id              Int      @id @default(autoincrement())
+  userId          Int
+  originalTweetId Int
+  date            DateTime @default(now())
+  user            User     @relation(fields: [userId], references: [id])
+  originalTweet   Tweet    @relation(fields: [originalTweetId], references: [id])
+}
+
+model Mention {
+  id              Int      @id @default(autoincrement())
+  userId          Int
+  tweetId         Int
+  mentionedUserId Int
+  date            DateTime @default(now())
+  tweet           Tweet    @relation(fields: [tweetId], references: [id])
+  mentionedUser   User     @relation(fields: [mentionedUserId], references: [id])
+}
+
+model RecommendedPost {
+  id      Int      @id @default(autoincrement())
+  userId  Int
+  tweetId Int
+  date    DateTime @default(now())
+  user    User     @relation(fields: [userId], references: [id])
+}
