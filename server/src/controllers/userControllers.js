@@ -11,7 +11,30 @@ const getTweetDetails = async (req, res, next) => {
       },
       include: {
         user: true,
-        replies: true,
+        likes: true,
+        retweets: true,
+      },
+    });
+
+    if (!tweet) {
+      return res.status(404).json({ error: "Tweet not found" });
+    }
+
+    res.status(200).json(tweet);
+  } catch (error) {
+    console.error("Error fetching tweet:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+const getTweetReplies = async (req, res, next) => {
+  const { id } = req.query;
+  try {
+    const tweet = await prisma.tweet.findMany({
+      where: {
+        originalTweetId: Number(id),
+      },
+      include: {
+        user: true,
         likes: true,
         retweets: true,
       },
@@ -127,22 +150,93 @@ const getMoreUsers = async (req, res, next) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
 const postReply = async (req, res, next) => {
   const { userId, originalTweetId, text } = req.body;
   try {
-    const newReply = await prisma.reply.create({
+    const newReply = await prisma.tweet.create({
       data: {
         userId,
         originalTweetId,
         text,
-        isPost: false,
       },
     });
-
     res.status(201).json(newReply);
   } catch (error) {
     console.log(error);
+  }
+};
+
+const hasLiked = async (req, res, next) => {
+  console.log(req.query);
+  const { userId, tweetId } = req.query;
+
+  try {
+    const existingLike = await prisma.like.findUnique({
+      where: {
+        userId_tweetId: {
+          userId: Number(userId),
+          tweetId: Number(tweetId),
+        },
+      },
+    });
+
+    const userHasLiked = !!existingLike;
+
+    res.json({ hasLiked: userHasLiked });
+  } catch (error) {
+    console.error("Error checking like status:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const getLikeCount = async (req, res, next) => {
+  const { tweetId } = req.query;
+
+  try {
+    const likeCount = await prisma.like.count({
+      where: {
+        tweetId: Number(tweetId),
+      },
+    });
+
+    res.json({ likeCount });
+  } catch (error) {
+    console.error("Error getting like count:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const like = async (req, res, next) => {
+  const { userId, tweetId } = req.body;
+  try {
+    const newLike = await prisma.like.create({
+      data: {
+        userId,
+        tweetId,
+      },
+    });
+    res.status(201).json(newLike);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const dislike = async (req, res, next) => {
+  const { userId, tweetId } = req.body;
+  try {
+    const deletedLike = await prisma.like.delete({
+      where: {
+        userId_tweetId: {
+          userId: Number(userId),
+          tweetId: Number(tweetId),
+        },
+      },
+    });
+
+    res.status(200).json(deletedLike);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
@@ -195,9 +289,17 @@ const unfollow = async (req, res, user) => {
 module.exports = {
   postTweet,
   getTweetDetails,
+  getTweetReplies,
   getMoreTweets,
   getMoreUsers,
+
   postReply,
+
+  hasLiked,
+  getLikeCount,
+  like,
+  dislike,
+
   follow,
   unfollow,
 };

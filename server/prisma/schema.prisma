@@ -22,31 +22,20 @@ model User {
   likes            Like[]
   retweets         Retweet[]
   mentions         Mention[]
-  replies          Reply[]
   recommendedPosts RecommendedPost[]
 }
 
 model Tweet {
-  id       Int       @id @default(autoincrement())
-  userId   Int
-  text     String
-  date     DateTime  @default(now())
-  user     User      @relation(fields: [userId], references: [id])
-  likes    Like[]
-  retweets Retweet[]
-  mentions Mention[]
-  replies  Reply[]
-}
-
-model Reply {
-  id              Int      @id @default(autoincrement())
+  id              Int       @id @default(autoincrement())
   userId          Int
-  originalTweetId Int
   text            String
-  isPost          Boolean  @default(false)
-  date            DateTime @default(now())
-  user            User     @relation(fields: [userId], references: [id])
-  originalTweet   Tweet    @relation(fields: [originalTweetId], references: [id])
+  originalTweetId Int?
+  isPost          Boolean   @default(false)
+  date            DateTime  @default(now())
+  user            User      @relation(fields: [userId], references: [id])
+  likes           Like[]
+  retweets        Retweet[]
+  mentions        Mention[]
 }
 
 model Follower {
@@ -66,6 +55,8 @@ model Like {
   date    DateTime @default(now())
   user    User     @relation(fields: [userId], references: [id])
   tweet   Tweet    @relation(fields: [tweetId], references: [id])
+
+  @@unique([userId, tweetId])
 }
 
 model Retweet {
@@ -75,6 +66,8 @@ model Retweet {
   date            DateTime @default(now())
   user            User     @relation(fields: [userId], references: [id])
   originalTweet   Tweet    @relation(fields: [originalTweetId], references: [id])
+
+  @@unique([userId, originalTweetId])
 }
 
 model Mention {

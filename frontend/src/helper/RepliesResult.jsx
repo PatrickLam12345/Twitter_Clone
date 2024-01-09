@@ -7,7 +7,7 @@ import Retweet from "./buttons/Retweet";
 import { useSelector } from "react-redux";
 import { selectUserInfo } from "../redux/userInfoSlice";
 
-export default function TweetResult({ tweet }) {
+export default function RepliesResult({ tweet }) {
   const userInfo = useSelector(selectUserInfo);
   console.log(tweet);
   const [likeCount, setLikeCount] = useState(0);
@@ -19,9 +19,7 @@ export default function TweetResult({ tweet }) {
     }
   }, [tweet]);
 
-  useEffect(() => {
-    
-  }, [likeCount]);
+  useEffect(() => {}, [likeCount]);
 
   const formatTimeDifference = () => {
     const now = new Date();
@@ -48,19 +46,13 @@ export default function TweetResult({ tweet }) {
     navigate(`/tweet/${tweetId}`);
   };
 
-  const handleClick = (e) => {
-    e.stopPropagation();
-  };
-
   return (
-    <div
-      style={{
-        boxSizing: "border-box",
-        border: "1px solid #333",
-        borderTop: "none",
-      }}
-    >
+    <div>
       <div
+        style={{
+          boxSizing: "border-box",
+          borderTop: "1px solid #333",
+        }}
         onClick={() => {
           getTweetChain(tweet.id);
         }}
@@ -83,7 +75,6 @@ export default function TweetResult({ tweet }) {
           display: "flex",
           justifyContent: "space-evenly",
           padding: "10px",
-          cursor: "pointer",
         }}
       >
         <ReplyAsPost />

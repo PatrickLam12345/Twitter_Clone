@@ -15,19 +15,11 @@ CREATE TABLE "Tweet" (
     "id" SERIAL NOT NULL,
     "userId" INTEGER NOT NULL,
     "text" TEXT NOT NULL,
+    "originalTweetId" INTEGER,
+    "isPost" BOOLEAN NOT NULL DEFAULT false,
     "date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Tweet_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Reply" (
-    "id" SERIAL NOT NULL,
-    "userId" INTEGER NOT NULL,
-    "originalTweetId" INTEGER NOT NULL,
-    "date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "Reply_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -90,14 +82,14 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 -- CreateIndex
 CREATE UNIQUE INDEX "Follower_followerId_followingId_key" ON "Follower"("followerId", "followingId");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "Like_userId_tweetId_key" ON "Like"("userId", "tweetId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Retweet_userId_originalTweetId_key" ON "Retweet"("userId", "originalTweetId");
+
 -- AddForeignKey
 ALTER TABLE "Tweet" ADD CONSTRAINT "Tweet_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Reply" ADD CONSTRAINT "Reply_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Reply" ADD CONSTRAINT "Reply_originalTweetId_fkey" FOREIGN KEY ("originalTweetId") REFERENCES "Tweet"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Follower" ADD CONSTRAINT "Follower_followingId_fkey" FOREIGN KEY ("followingId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

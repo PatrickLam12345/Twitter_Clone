@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 
-export default function ReplyBox({ userId, originalTweetId }) {
+export default function ReplyBox({ onPost, userId, originalTweetId }) {
   const [text, setText] = useState("");
   const [rows, setRows] = useState(1);
 
@@ -14,25 +14,27 @@ export default function ReplyBox({ userId, originalTweetId }) {
   };
 
   const postReply = async () => {
-    try {
-      const response = await axios.post(
-        `http://localhost:3000/api/user/postReply`,
-        {
-          userId,
-          originalTweetId,
-          text
-        },
-        {
-          headers: {
-            authorization: window.localStorage.getItem("token"),
+    if (text.trim()) {
+      try {
+        const response = await axios.post(
+          `http://localhost:3000/api/user/postReply`,
+          {
+            userId,
+            originalTweetId,
+            text,
           },
+          {
+            headers: {
+              authorization: window.localStorage.getItem("token"),
+            },
+          }
+        );
+        if (response.status == 201) {
+          onPost()
         }
-      );
-      if (response.status == 201) {
-        console.log("reply Posted");
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
     }
   };
 
@@ -47,7 +49,7 @@ export default function ReplyBox({ userId, originalTweetId }) {
       <textarea
         placeholder="Post Your Reply"
         value={text}
-        onChange={postReply}
+        onChange={handleInputChange}
         rows={rows}
         style={{
           padding: "8px",

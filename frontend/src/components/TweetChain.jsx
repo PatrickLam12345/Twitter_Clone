@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import TweetText from "../helper/TweetText";
@@ -8,11 +8,24 @@ import Like from "../helper/buttons/Like";
 import ReplyBox from "../helper/ReplyBox";
 import { useSelector } from "react-redux";
 import { selectUserInfo } from "../redux/userInfoSlice";
+import RepliesResult from "../helper/RepliesResult";
 
 export default function TweetChain() {
   const userInfo = useSelector(selectUserInfo);
+  const [replies, setReplies] = useState([]);
   const [tweet, setTweet] = useState(null);
+  const [fetchRepliesTrigger, setFetchRepliesTrigger] = useState(false);
   const { tweetId } = useParams();
+  const [likeCount, setLikeCount] = useState(0);
+
+  useEffect(() => {
+    if (tweet && tweet.likes) {
+      setLikeCount(tweet.likes.length);
+      console.log("Like Count Updated:", tweet.likes.length);
+    }
+  }, [tweet]);
+
+  useEffect(() => {}, [likeCount]);
 
   const navigate = useNavigate();
   const navProfile = (username) => {
@@ -60,12 +73,44 @@ export default function TweetChain() {
         setTweet(response.data);
         console.log(response.data);
       } catch (error) {
-        console.error("Error fetching tweet replies:", error);
+        console.error("Error fetching tweet:", error);
       }
     };
 
     fetchTweet();
-  }, []);
+  }, [tweetId]);
+
+  useEffect(() => {
+    const fetchReplies = async () => {
+      console.log(tweet);
+      console.log(userInfo.id);
+      console.log(tweet.id);
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/api/user/getTweetReplies",
+          {
+            params: {
+              id: tweetId,
+            },
+            headers: {
+              authorization: window.localStorage.getItem("token"),
+            },
+          }
+        );
+        setReplies(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error fetching tweet replies:", error);
+      }
+    };
+    if (tweet) {
+      fetchReplies();
+    }
+  }, [tweet, fetchRepliesTrigger]);
+
+  const onReplyBoxPost = () => {
+    setFetchRepliesTrigger((prev) => !prev);
+  };
 
   return (
     <>
@@ -108,10 +153,17 @@ export default function TweetChain() {
             >
               <ReplyAsPost />
               <Retweet />
-              <Like />
+              <Like userId={userInfo.id} tweetId={tweet.id} likes={likeCount} />
             </div>
-            <ReplyBox userId={userInfo.id} originalTweetId={tweet.id} />
+            <ReplyBox
+              onPost={onReplyBoxPost}
+              userId={userInfo.id}
+              originalTweetId={tweet.id}
+            />
           </div>
+          {replies.map((reply) => (
+            <RepliesResult key={reply.id} tweet={reply} />
+          ))}
         </div>
       ) : null}
     </>
