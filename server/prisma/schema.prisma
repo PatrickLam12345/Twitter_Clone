@@ -48,7 +48,7 @@ model Reply {
 }
 
 model Follower {
-  followerId      Int      @id @default(autoincrement())
+  id      Int      @id @default(autoincrement())
   followerUserId  Int
   followingUserId Int
   followDate      DateTime @default(now())

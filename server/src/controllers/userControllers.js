@@ -18,10 +18,11 @@ const postTweet = async (req, res, next) => {
 };
 
 const getMoreTweets = async (req, res, next) => {
-    const { searchQuery, currentPage } = req.query;
-    const itemsPerPage = 8;
-    try {
-      const tweetResults = await prisma.tweet.findMany({
+  const { searchQuery, currentPage } = req.query;
+  const itemsPerPage = 8;
+  try {
+    const tweetResults =
+      (await prisma.tweet.findMany({
         where: {
           text: { contains: searchQuery, mode: "insensitive" },
         },
@@ -40,20 +41,21 @@ const getMoreTweets = async (req, res, next) => {
         },
         skip: (currentPage - 1) * itemsPerPage,
         take: itemsPerPage,
-      }) || [];
-  
-      res.json(tweetResults);
-    } catch (error) {
-      console.error("Error fetching more tweets:", error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  };
-  
-  const getMoreUsers = async (req, res, next) => {
-    const { searchQuery, currentPage } = req.query;
-    const itemsPerPage = 8;
-    try {
-      const userResults = await prisma.user.findMany({
+      })) || [];
+
+    res.json(tweetResults);
+  } catch (error) {
+    console.error("Error fetching more tweets:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const getMoreUsers = async (req, res, next) => {
+  const { searchQuery, currentPage, userId } = req.query;
+  const itemsPerPage = 8;
+  try {
+    const userResults =
+      (await prisma.user.findMany({
         where: {
           OR: [
             { username: { contains: searchQuery, mode: "insensitive" } },
@@ -68,17 +70,32 @@ const getMoreTweets = async (req, res, next) => {
         },
         skip: (currentPage - 1) * itemsPerPage,
         take: itemsPerPage,
-      }) || [];
-  
-      res.json(userResults);
-    } catch (error) {
-      console.error("Error fetching more users:", error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  };
+      })) || [];
+
+    const usersWithFollowStatus = await Promise.all(
+      userResults.map(async (user) => {
+        const isFollowing = await prisma.follower.findFirst({
+          where: {
+            followerUserId: userId,
+            followingUserId: user.id,
+          },
+        });
+
+        return { ...user, isFollowing: !!isFollowing };
+      })
+    );
+    res.json(usersWithFollowStatus);
+  } catch (error) {
+    console.error("Error fetching more users:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const follow = async (req, res, next) => {};
 
 module.exports = {
   postTweet,
   getMoreTweets,
-  getMoreUsers
+  getMoreUsers,
+  follow
 };

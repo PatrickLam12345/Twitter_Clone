@@ -6,4 +6,6 @@ const userControllers = require('../controllers/userControllers')
 router.post('/postTweet', authMiddleware.authenticateToken, userControllers.postTweet)
 router.get('/getMoreTweets', authMiddleware.authenticateToken, userControllers.getMoreTweets)
 router.get('/getMoreUsers', authMiddleware.authenticateToken, userControllers.getMoreUsers)
+router.post('/follow', authMiddleware.authenticateToken, userControllers.follow)
+
 module.exports = router

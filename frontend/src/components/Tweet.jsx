@@ -109,7 +109,6 @@ export default function Tweet({ open, handleClose }) {
                 border: "none",
                 cursor: "pointer",
                 fontWeight: "500",
-                marginRight: "autnoneo",
               }}
             >
               Tweet!

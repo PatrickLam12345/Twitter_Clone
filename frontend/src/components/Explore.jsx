@@ -1,8 +1,12 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
 import TweetResult from "../helper/TweetResult";
+import UserResult from "../helper/UserResult";
+import { useSelector } from "react-redux";
+import { selectUserInfo } from "../redux/userInfoSlice";
 
 export default function Explore() {
+  const userInfo = useSelector(selectUserInfo);
   const [hasSearched, setHasSearched] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
@@ -13,6 +17,16 @@ export default function Explore() {
   const handleTabClick = (tab) => {
     if (activeTab !== tab) {
       setActiveTab(tab);
+    }
+
+    if (tab == "People") {
+      setSearchResults(null);
+      setCurrentPage(0);
+      getUsers();
+    } else {
+      setSearchResults(null);
+      setCurrentPage(0);
+      getTweets();
     }
   };
 
@@ -31,15 +45,45 @@ export default function Explore() {
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
       if (searchQuery.trim()) {
-        setSearchQuery("");
-        setCurrentPage(1);
-        getMoreTweets();
+        setCurrentPage(0);
+        if (activeTab == "Latest") {
+          getTweets();
+        } else {
+          getUsers();
+        }
       }
+    }
+  };
+
+  const getTweets = async () => {
+    try {
+      console.log(searchQuery);
+      console.log(currentPage);
+      const response = await axios.get(
+        "http://localhost:3000/api/user/getMoreTweets",
+        {
+          headers: {
+            authorization: window.localStorage.getItem("token"),
+          },
+          params: {
+            searchQuery,
+            currentPage: 1,
+          },
+        }
+      );
+      const tweets = response.data;
+      console.log(tweets);
+      setCurrentPage((prevPage) => prevPage + 1);
+      setSearchResults(tweets);
+      setHasSearched(true);
+    } catch (error) {
+      console.error("Error Fetching:", error);
     }
   };
 
   const getMoreTweets = async () => {
     try {
+      console.log(searchQuery);
       const response = await axios.get(
         "http://localhost:3000/api/user/getMoreTweets",
         {
@@ -52,20 +96,67 @@ export default function Explore() {
           },
         }
       );
-  
       const tweets = response.data;
+      console.log(tweets);
       setCurrentPage((prevPage) => prevPage + 1);
-      if (!searchResults) {
-        setSearchResults(tweets);
-        setHasSearched(true);
-      } else {
-        setSearchResults((prevResults) => [...prevResults, ...tweets]);
-      }
+      setSearchResults((prevResults) => [...prevResults, ...tweets]);
     } catch (error) {
       console.error("Error Fetching:", error);
     }
   };
-  
+
+  const getUsers = async () => {
+    try {
+      console.log(searchQuery);
+      console.log(currentPage);
+      console.log(userInfo.id, "id")
+      const response = await axios.get(
+        "http://localhost:3000/api/user/getMoreUsers",
+        {
+          headers: {
+            authorization: window.localStorage.getItem("token"),
+          },
+          params: {
+            searchQuery,
+            currentPage: 1,
+            userId: Number(userInfo.id)
+          },
+        }
+      );
+      const users = response.data;
+      console.log(users);
+      setCurrentPage((prevPage) => prevPage + 1);
+      setSearchResults(users);
+      setHasSearched(true);
+    } catch (error) {
+      console.error("Error Fetching:", error);
+    }
+  };
+
+  const getMoreUsers = async () => {
+    try {
+      console.log(searchQuery);
+      const response = await axios.get(
+        "http://localhost:3000/api/user/getMoreUsers",
+        {
+          headers: {
+            authorization: window.localStorage.getItem("token"),
+          },
+          params: {
+            searchQuery,
+            currentPage: currentPage + 1,
+            userId: userInfo.id,
+          },
+        }
+      );
+      const users = response.data;
+      console.log(users);
+      setCurrentPage((prevPage) => prevPage + 1);
+      setSearchResults((prevResults) => [...prevResults, ...users]);
+    } catch (error) {
+      console.error("Error Fetching:", error);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -74,7 +165,11 @@ export default function Explore() {
       const clientHeight = document.documentElement.clientHeight;
 
       if (scrollHeight - scrollTop === clientHeight) {
-        getMoreTweets();
+        if (activeTab == "Latest") {
+          getMoreTweets();
+        } else {
+          getMoreUsers();
+        }
       }
     };
 
@@ -129,7 +224,27 @@ export default function Explore() {
             ))}
           </div>
         ) : (
-          <div>No tweets found</div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "50px",
+            }}
+          >
+            No tweets found
+          </div>
+        )
+      ) : null}
+      {searchResults && activeTab == "People" ? (
+        searchResults.length > 0 ? (
+          <div>
+            {searchResults.map((result) => (
+              <UserResult key={result.id} user={result} />
+            ))}
+          </div>
+        ) : (
+          <div>No Users found</div>
         )
       ) : null}
       <div style={{ height: "20vh", background: "#000000" }}></div>
@@ -142,7 +257,7 @@ export default function Explore() {
             height: "50px",
           }}
         >
-          Loading tweets...
+          Loading...
         </div>
       )}
     </div>
