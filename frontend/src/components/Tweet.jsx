@@ -49,7 +49,9 @@ export default function Tweet({ open, handleClose }) {
       if (response.status == 201) {
         console.log("tweet posted");
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

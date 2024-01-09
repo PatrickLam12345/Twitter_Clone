@@ -1,6 +1,17 @@
 import { useNavigate } from "react-router-dom";
+import TweetText from "./TweetText";
+import { useEffect, useState } from "react";
 
 export default function TweetResult({ tweet }) {
+  console.log(tweet);
+  const [retweetCount, setRetweetCount] = useState(0);
+  const [likeCount, setLikeCount] = useState(0);
+
+  useEffect(() => {
+    setRetweetCount(tweet.retweets.length);
+    setLikeCount(tweet.likes.length);
+  }, [tweet.retweets.length, tweet.likes.length]);
+
   const formatTimeDifference = () => {
     const now = new Date();
     const diffInSeconds = Math.floor((now - new Date(tweet.date)) / 1000);
@@ -53,7 +64,7 @@ export default function TweetResult({ tweet }) {
           </span>
           <span style={{ marginLeft: "5px" }}>- {formatTimeDifference()}</span>
         </p>
-        <p>{tweet.text}</p>
+        <TweetText text={tweet.text} />
       </div>
       <div
         style={{
@@ -68,7 +79,7 @@ export default function TweetResult({ tweet }) {
             getTweetChain(tweet.id);
           }}
         >
-          Button 1
+          Reply
         </button>
         <button
           style={{ flex: 1, marginRight: "5px" }}
@@ -76,7 +87,7 @@ export default function TweetResult({ tweet }) {
             retweet(e, tweet.id);
           }}
         >
-          Button 2
+          {retweetCount}
         </button>
         <button
           style={{ flex: 1 }}
@@ -84,7 +95,7 @@ export default function TweetResult({ tweet }) {
             like(e, tweet.id);
           }}
         >
-          Button 3
+          {likeCount}
         </button>
       </div>
     </div>

@@ -42,6 +42,8 @@ model Reply {
   id              Int      @id @default(autoincrement())
   userId          Int
   originalTweetId Int
+  text            String
+  isPost          Boolean  @default(false)
   date            DateTime @default(now())
   user            User     @relation(fields: [userId], references: [id])
   originalTweet   Tweet    @relation(fields: [originalTweetId], references: [id])

@@ -2,6 +2,32 @@ const { PrismaClient } = require("@prisma/client");
 const { userInfo } = require("os");
 const prisma = new PrismaClient();
 
+const getTweetDetails = async (req, res, next) => {
+  const { id } = req.query;
+  try {
+    const tweet = await prisma.tweet.findUnique({
+      where: {
+        id: Number(id),
+      },
+      include: {
+        user: true,
+        replies: true,
+        likes: true,
+        retweets: true,
+      },
+    });
+
+    if (!tweet) {
+      return res.status(404).json({ error: "Tweet not found" });
+    }
+
+    res.status(200).json(tweet);
+  } catch (error) {
+    console.error("Error fetching tweet:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 const postTweet = async (req, res, next) => {
   try {
     const { text, userId } = req.body;
@@ -37,6 +63,16 @@ const getMoreTweets = async (req, res, next) => {
               id: true,
               username: true,
               displayName: true,
+            },
+          },
+          likes: {
+            select: {
+              id: true,
+            },
+          },
+          retweets: {
+            select: {
+              id: true,
             },
           },
         },
@@ -92,6 +128,24 @@ const getMoreUsers = async (req, res, next) => {
   }
 };
 
+const postReply = async (req, res, next) => {
+  const { userId, originalTweetId, text } = req.body;
+  try {
+    const newReply = await prisma.reply.create({
+      data: {
+        userId,
+        originalTweetId,
+        text,
+        isPost: false,
+      },
+    });
+
+    res.status(201).json(newReply);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const follow = async (req, res, next) => {
   const { followerId, followingId } = req.body;
   const existingFollow = await prisma.follower.findUnique({
@@ -140,8 +194,10 @@ const unfollow = async (req, res, user) => {
 
 module.exports = {
   postTweet,
+  getTweetDetails,
   getMoreTweets,
   getMoreUsers,
+  postReply,
   follow,
   unfollow,
 };

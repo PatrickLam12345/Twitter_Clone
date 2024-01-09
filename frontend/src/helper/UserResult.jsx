@@ -15,10 +15,10 @@ export default function UserResult({ user }) {
   };
 
   const navigate = useNavigate()
-  const handleClick = (username) => {
+  const navProfile = (username) => {
     navigate(`/${username}`)
   }
-  
+
   useEffect(() => {
     if (user.isFollowing) {
       setFollowing(true);
@@ -65,7 +65,7 @@ export default function UserResult({ user }) {
         border: "1px solid #333",
         borderTop: "none",
       }}
-      onClick={() => {handleClick(user.username)}}
+      onClick={() => {navProfile(user.username)}}
     >
       <div
         style={{
