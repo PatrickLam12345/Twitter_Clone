@@ -84,6 +84,7 @@ export default function Reply({ userId, tweetId }) {
               onPost={handleSubmit}
               userId={userId}
               originalTweetId={tweetId}
+              mentionedUser={null}
             />
           </Box>
         </Fade>

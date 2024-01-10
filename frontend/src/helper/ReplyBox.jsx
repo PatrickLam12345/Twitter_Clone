@@ -4,7 +4,7 @@ import ImageIcon from "@mui/icons-material/Image";
 import { IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
-export default function ReplyBox({ onPost, userId, originalTweetId }) {
+export default function ReplyBox({ onPost, userId, originalTweetId, mentionedUser }) {
   const [text, setText] = useState("");
   const [rows, setRows] = useState(1);
   const [file, setFile] = useState(null);
@@ -36,8 +36,11 @@ export default function ReplyBox({ onPost, userId, originalTweetId }) {
   };
 
   const postReply = async () => {
+    console.log(mentionedUser)
     const formData = new FormData();
-    const usernames = text.match(/@(\w+)/g) || [];
+    const names = (text.match(/@(\w+)/g) || []).map(username => username.slice(1))
+    const usernames = [...names, mentionedUser]
+    console.log(usernames)
     const descriptionData = JSON.stringify({
       userId,
       originalTweetId,

@@ -111,6 +111,8 @@ export default function Profile() {
           getMoreLikes();
         } else if (activeTab == "retweets") {
           getMoreRetweets();
+        } else if (activeTab == "mentions") {
+          getMoreMentions();
         }
       }
     };
@@ -137,6 +139,9 @@ export default function Profile() {
     } else if (tab == "retweets") {
       setCurrentPage(0);
       getRetweets();
+    } else if (tab == "mentions") {
+      setCurrentPage(0);
+      getMentions();
     }
   };
 
@@ -338,6 +343,52 @@ export default function Profile() {
     }
   };
 
+  const getMentions = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/user/getMentionsByUser",
+        {
+          headers: {
+            authorization: window.localStorage.getItem("token"),
+          },
+          params: {
+            userId: user.id,
+            currentPage: 1,
+          },
+        }
+      );
+      console.log(response.data, "retweets");
+      setCurrentPage((prevPage) => prevPage + 1);
+      setResults(response.data);
+    } catch (error) {
+      console.error("Error Fetching:", error);
+    }
+  };
+
+  const getMoreMentions = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/user/getMentionsByUser",
+        {
+          headers: {
+            authorization: window.localStorage.getItem("token"),
+          },
+          params: {
+            userId: user.id,
+            currentPage: currentPage + 1,
+          },
+        }
+      );
+      setCurrentPage((prevPage) => prevPage + 1);
+      setResults((prevResults) => ({
+        ...prevResults,
+        tweets: [...prevResults.tweets, ...response.data.tweets],
+      }));
+    } catch (error) {
+      console.error("Error Fetching:", error);
+    }
+  };
+
   function formatJoinedDate(dateString) {
     const date = new Date(dateString);
     const month = date.toLocaleString("default", { month: "long" });
@@ -434,6 +485,12 @@ export default function Profile() {
                 Replies
               </div>
               <div
+                style={tabStyle("mentions")}
+                onClick={() => handleTabClick("mentions")}
+              >
+                Mentions
+              </div>
+              <div
                 style={tabStyle("retweets")}
                 onClick={() => handleTabClick("retweets")}
               >
@@ -488,6 +545,29 @@ export default function Profile() {
                   }}
                 >
                   User has not replied to anything...
+                </div>
+              )
+            )
+          ) : null}
+
+          {results && activeTab == "mentions" ? (
+            results.tweets?.length > 0 ? (
+              <div>
+                {results.tweets.map((tweet) => (
+                  <TweetResult key={tweet.id} tweet={tweet} />
+                ))}
+              </div>
+            ) : (
+              shouldDisplayNoDataMessage && (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "50px",
+                  }}
+                >
+                  User has not been mentioned...
                 </div>
               )
             )

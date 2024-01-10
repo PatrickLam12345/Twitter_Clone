@@ -179,6 +179,9 @@ const getTweetsByUser = async (req, res, next) => {
         registrationDate: true,
         followers: true,
         tweets: {
+          where: {
+            isPost: true,
+          },
           orderBy: {
             date: "desc",
           },
@@ -237,6 +240,53 @@ const getRetweetsByUser = async (req, res, next) => {
 
     const tweetsWithUser = user.retweets.map((retweet) => ({
       ...retweet.originalTweet,
+      user: {
+        username: user.username,
+        displayName: user.displayName,
+      },
+    }));
+
+    const modifiedUser = {
+      ...user,
+      tweets: tweetsWithUser,
+    };
+
+    res.status(200).json(modifiedUser);
+  } catch (error) {
+    console.error("Error fetching user tweets:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const getMentionsByUser = async (req, res, next) => {
+  const { userId, currentPage } = req.query;
+  const itemsPerPage = 8;
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: Number(userId),
+      },
+      select: {
+        id: true,
+        username: true,
+        displayName: true,
+        registrationDate: true,
+        followers: true,
+        mentions: {
+          select: {
+            tweet: true,
+          },
+          orderBy: {
+            date: "desc",
+          },
+          take: itemsPerPage,
+          skip: (currentPage - 1) * itemsPerPage,
+        },
+      },
+    });
+
+    const tweetsWithUser = user.mentions.map((mentions) => ({
+      ...mentions.tweet,
       user: {
         username: user.username,
         displayName: user.displayName,
@@ -407,66 +457,74 @@ const getTweetReplies = async (req, res, next) => {
 };
 
 const postTweet = async (req, res, next) => {
-  try {
-    const upload = multer().single("file");
-    upload(req, res, async function (err) {
-      if (err instanceof multer.MulterError) {
-        return res.status(400).json({ error: "Multer Error" });
-      } else if (err) {
+  const upload = multer().single("file");
+
+  upload(req, res, async (err) => {
+    if (err instanceof multer.MulterError || err) {
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    const file = req.file;
+    const { description } = req.body;
+    const descriptionObject = JSON.parse(description);
+    const { userId, text, usernames } = descriptionObject;
+
+    const tweetData = {
+      userId,
+      text,
+      isPost: true,
+    };
+
+    if (file) {
+      const s3Key = uuidv4();
+      const uploadParams = {
+        Bucket: "twitterclonebucket2024",
+        Key: s3Key,
+        Body: file.buffer,
+      };
+
+      try {
+        const uploadResult = await s3.upload(uploadParams).promise();
+        tweetData.s3Key = s3Key;
+      } catch (error) {
+        console.error(error);
         return res.status(500).json({ error: "Internal Server Error" });
       }
-      const file = req.file;
-      console.log(req.body);
-      const { description } = req.body;
-      const descriptionObject = JSON.parse(description);
-      const { userId, text } = descriptionObject;
+    }
 
-      if (file) {
-        const s3Key = uuidv4();
-        const uploadParams = {
-          Bucket: "twitterclonebucket2024",
-          Key: s3Key,
-          Body: file.buffer,
-        };
+    try {
+      const newTweet = await prisma.tweet.create({ data: tweetData });
 
-        try {
-          const uploadResult = await s3.upload(uploadParams).promise();
+      const mentionedUsers = await prisma.user.findMany({
+        where: {
+          username: {
+            in: usernames,
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
 
-          const newReply = await prisma.tweet.create({
-            data: {
-              userId,
-              text,
-              s3Key,
-              isPost: true,
-            },
-          });
-
-          res.status(201).json(newReply);
-        } catch (error) {
-          console.error(error);
-          res.status(500).json({ error: "Internal Server Error" });
-        }
-      } else {
-        try {
-          const newReply = await prisma.tweet.create({
-            data: {
-              userId,
-              text,
-              isPost: true,
-            },
-          });
-
-          res.status(201).json(newReply);
-        } catch (error) {
-          console.error(error);
-          res.status(500).json({ error: "Internal Server Error" });
-        }
+      const filteredMentions = mentionedUsers
+        .filter((mentionedUser) => mentionedUser.id !== userId)
+        .map((mentionedUser) => ({
+          userId,
+          tweetId: newTweet.id,
+          mentionedUserId: mentionedUser.id,
+        }));
+      if (filteredMentions.length > 0) {
+        await prisma.mention.createMany({
+          data: filteredMentions,
+        });
       }
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
+
+      res.status(201).json(newTweet);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  });
 };
 
 const getTweetMedia = async (req, res, next) => {};
@@ -567,14 +625,16 @@ const postReply = async (req, res, next) => {
       } else if (err) {
         return res.status(500).json({ error: "Internal Server Error" });
       }
+
       const file = req.file;
-      console.log(req.body);
       const { description } = req.body;
       const descriptionObject = JSON.parse(description);
       const { userId, originalTweetId, text, usernames } = descriptionObject;
 
+      let s3Key = null;
+
       if (file) {
-        const s3Key = uuidv4();
+        s3Key = uuidv4();
         const uploadParams = {
           Bucket: "twitterclonebucket2024",
           Key: s3Key,
@@ -582,83 +642,49 @@ const postReply = async (req, res, next) => {
         };
 
         try {
-          const uploadResult = await s3.upload(uploadParams).promise();
+          await s3.upload(uploadParams).promise();
+        } catch (error) {
+          console.error(error);
+          return res.status(500).json({ error: "Error uploading file to S3" });
+        }
+      }
 
-          const newReply = await prisma.tweet.create({
-            data: {
-              userId,
-              originalTweetId,
-              text,
-              s3Key,
+      try {
+        const newReply = await prisma.tweet.create({
+          data: {
+            userId,
+            originalTweetId,
+            text,
+            s3Key,
+          },
+        });
+        const mentionedUsers = await prisma.user.findMany({
+          where: {
+            username: {
+              in: usernames,
             },
-          });
-
-          const mentionedUsers = await prisma.user.findMany({
-            where: {
-              username: {
-                in: usernames,
-              },
-            },
-            select: {
-              id: true,
-            },
-          });
-
-          const filteredMentions = mentionedUsers
-            .filter((mentionedUser) => mentionedUser.id !== userId)
-            .map((mentionedUser) => ({
-              userId,
-              tweetId,
-              mentionedUserId: mentionedUser.id,
-            }));
-
+          },
+          select: {
+            id: true,
+          },
+        });
+        const filteredMentions = mentionedUsers
+          .filter((mentionedUser) => mentionedUser.id !== userId)
+          .map((mentionedUser) => ({
+            userId,
+            tweetId: newReply.id,
+            mentionedUserId: mentionedUser.id,
+          }));
+        if (filteredMentions.length > 0) {
           await prisma.mention.createMany({
             data: filteredMentions,
           });
-
-          res.status(201).json(newReply);
-        } catch (error) {
-          console.error(error);
-          res.status(500).json({ error: "Internal Server Error" });
         }
-      } else {
-        try {
-          const newReply = await prisma.tweet.create({
-            data: {
-              userId,
-              originalTweetId,
-              text,
-            },
-          });
 
-          const mentionedUsers = await prisma.user.findMany({
-            where: {
-              username: {
-                in: usernames,
-              },
-            },
-            select: {
-              id: true,
-            },
-          });
-
-          const filteredMentions = mentionedUsers
-            .filter((mentionedUser) => mentionedUser.id !== userId)
-            .map((mentionedUser) => ({
-              userId,
-              tweetId,
-              mentionedUserId: mentionedUser.id,
-            }));
-
-          await prisma.mention.createMany({
-            data: filteredMentions,
-          });
-
-          res.status(201).json(newReply);
-        } catch (error) {
-          console.error(error);
-          res.status(500).json({ error: "Internal Server Error" });
-        }
+        res.status(201).json(newReply);
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
       }
     });
   } catch (error) {
@@ -946,6 +972,7 @@ module.exports = {
 
   getTweetsByUser,
   getRetweetsByUser,
+  getMentionsByUser,
   getRepliesByUser,
   getLikesByUser,
 

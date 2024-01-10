@@ -53,6 +53,7 @@ export default function TweetChain() {
 
   useEffect(() => {
     const fetchTweet = async () => {
+      console.log(tweet)
       try {
         const response = await axios.get(
           "http://localhost:3000/api/user/getTweetDetails",
@@ -223,6 +224,7 @@ export default function TweetChain() {
                 onPost={onReplyBoxPost}
                 userId={userInfo.id}
                 originalTweetId={tweet.id}
+                mentionedUser={tweet.user.username}
               />
             </div>
           </div>

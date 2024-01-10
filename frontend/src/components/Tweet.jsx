@@ -67,9 +67,11 @@ export default function Tweet({ open, handleClose }) {
 
   const handlePost = async () => {
     const formData = new FormData();
+    const usernames = (text.match(/@(\w+)/g) || []).map(username => username.slice(1))
     const descriptionData = JSON.stringify({
       userId: userInfo.id,
       text,
+      usernames
     });
     formData.append("file", file);
     formData.append("description", descriptionData);
