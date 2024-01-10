@@ -2,6 +2,8 @@ const { PrismaClient } = require("@prisma/client");
 const { userInfo } = require("os");
 const prisma = new PrismaClient();
 
+const getProfileData = async (req, res, next) => {};
+
 const getTweetDetails = async (req, res, next) => {
   const { id } = req.query;
   try {
@@ -26,18 +28,25 @@ const getTweetDetails = async (req, res, next) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 const getTweetReplies = async (req, res, next) => {
-  const { id } = req.query;
+  const { id, currentPage } = req.query;
+  const itemsPerPage = 8;
   try {
     const tweet = await prisma.tweet.findMany({
       where: {
         originalTweetId: Number(id),
+      },
+      orderBy: {
+        date: "desc",
       },
       include: {
         user: true,
         likes: true,
         retweets: true,
       },
+      skip: (currentPage - 1) * itemsPerPage,
+      take: itemsPerPage,
     });
 
     if (!tweet) {
@@ -75,6 +84,9 @@ const getMoreTweets = async (req, res, next) => {
       (await prisma.tweet.findMany({
         where: {
           text: { contains: searchQuery, mode: "insensitive" },
+        },
+        orderBy: {
+          date: "desc",
         },
         select: {
           id: true,
@@ -167,20 +179,20 @@ const postReply = async (req, res, next) => {
 };
 
 const getReplyCount = async (req, res, next) => {
-    const { tweetId } = req.query;
-    try {
-      const tweetRepliesCount = await prisma.tweet.count({
-        where: {
-          originalTweetId: Number(tweetId),
-        },
-      });
-  
-      res.status(200).json({ replyCount: tweetRepliesCount });
-    } catch (error) {
-      console.error("Error getting like count:", error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  };
+  const { tweetId } = req.query;
+  try {
+    const tweetRepliesCount = await prisma.tweet.count({
+      where: {
+        originalTweetId: Number(tweetId),
+      },
+    });
+
+    res.status(200).json({ replyCount: tweetRepliesCount });
+  } catch (error) {
+    console.error("Error getting like count:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
 const hasLiked = async (req, res, next) => {
   const { userId, tweetId } = req.query;
@@ -375,6 +387,8 @@ const unfollow = async (req, res, user) => {
 };
 
 module.exports = {
+  getProfileData,
+
   postTweet,
   getTweetDetails,
   getTweetReplies,

@@ -7,14 +7,25 @@ import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import Tweet from "../components/Tweet";
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import { selectUserInfo } from "../redux/userInfoSlice";
 
 export default function Root() {
+  const userInfo = useSelector(selectUserInfo);
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  return (
-    <div style={{ display: "flex", height: "100%", maxWidth: "1300px", marginLeft: "auto", marginRight: "auto" }}>
+  return userInfo ? (
+    <div
+      style={{
+        display: "flex",
+        height: "100%",
+        maxWidth: "1300px",
+        marginLeft: "auto",
+        marginRight: "auto",
+      }}
+    >
       <div
         style={{
           minWidth: "10%",
@@ -111,7 +122,7 @@ export default function Root() {
               paddingBottom: "20px",
               gap: "15px",
             }}
-            to="/profile"
+            to={`/${userInfo.username}`}
           >
             <PersonOutlineIcon fontSize="large" /> Profile
           </Link>
@@ -146,5 +157,5 @@ export default function Root() {
         <Outlet />
       </div>
     </div>
-  );
+  ) : null;
 }

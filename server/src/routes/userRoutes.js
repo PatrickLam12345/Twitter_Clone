@@ -3,6 +3,8 @@ const router = express.Router()
 const authMiddleware = require('../middleware/authMiddleware')
 const userControllers = require('../controllers/userControllers')
 
+router.get('/getProfileData', authMiddleware.authenticateToken, userControllers.getProfileData)
+
 router.post('/postTweet', authMiddleware.authenticateToken, userControllers.postTweet)
 router.get('/getTweetDetails', authMiddleware.authenticateToken, userControllers.getTweetDetails)
 router.get('/getTweetReplies', authMiddleware.authenticateToken, userControllers.getTweetReplies)

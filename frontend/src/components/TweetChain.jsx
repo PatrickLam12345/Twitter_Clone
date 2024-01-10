@@ -16,6 +16,8 @@ export default function TweetChain() {
   const [tweet, setTweet] = useState(null);
   const [fetchRepliesTrigger, setFetchRepliesTrigger] = useState(false);
   const { tweetId } = useParams();
+  const [currentPage, setCurrentPage] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const navProfile = (username) => {
@@ -70,29 +72,58 @@ export default function TweetChain() {
     fetchTweet();
   }, [tweetId]);
 
+  const fetchReplies = async () => {
+    console.log(tweet);
+    console.log(userInfo.id);
+    console.log(tweet.id);
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/user/getTweetReplies",
+        {
+          params: {
+            id: tweetId,
+            currentPage: 1
+          },
+          headers: {
+            authorization: window.localStorage.getItem("token"),
+          },
+        }
+      );
+      setReplies(response.data)
+      setCurrentPage((prevPage) => prevPage + 1);
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error fetching tweet replies:", error);
+    }
+  };
+
+  const fetchMoreReplies = async () => {
+    console.log(tweet);
+    console.log(userInfo.id);
+    console.log(tweet.id);
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/user/getTweetReplies",
+        {
+          params: {
+            id: tweetId,
+            currentPage: currentPage + 1,
+          },
+          headers: {
+            authorization: window.localStorage.getItem("token"),
+          },
+        }
+      );
+      setReplies((prevReplies) => [...prevReplies, ...response.data]);
+      setCurrentPage((prevPage) => prevPage + 1);
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error fetching tweet replies:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchReplies = async () => {
-      console.log(tweet);
-      console.log(userInfo.id);
-      console.log(tweet.id);
-      try {
-        const response = await axios.get(
-          "http://localhost:3000/api/user/getTweetReplies",
-          {
-            params: {
-              id: tweetId,
-            },
-            headers: {
-              authorization: window.localStorage.getItem("token"),
-            },
-          }
-        );
-        setReplies(response.data);
-        console.log(response.data);
-      } catch (error) {
-        console.error("Error fetching tweet replies:", error);
-      }
-    };
+    setCurrentPage(0);
     if (tweet) {
       fetchReplies();
     }
@@ -102,58 +133,91 @@ export default function TweetChain() {
     setFetchRepliesTrigger((prev) => !prev);
   };
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollHeight = document.documentElement.scrollHeight;
+      const scrollTop = document.documentElement.scrollTop;
+      const clientHeight = document.documentElement.clientHeight;
+
+      if (scrollHeight - scrollTop === clientHeight) {
+        fetchMoreReplies();
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [loading, currentPage]);
+
   return (
     <>
       {tweet ? (
-        <div
-          style={{
-            boxSizing: "border-box",
-            border: "1px solid #333",
-          }}
-        >
-          <div style={{ padding: "10px" }}>
-            <div style={{ display: "inline-block" }}>
-              <p
-                style={{ fontWeight: "bold" }}
-                onClick={() => {
-                  navProfile(tweet.user.username);
+        <div>
+          <div
+            style={{
+              boxSizing: "border-box",
+              border: "1px solid #333",
+            }}
+          >
+            <div style={{ padding: "10px" }}>
+              <div style={{ display: "inline-block" }}>
+                <p
+                  style={{ fontWeight: "bold" }}
+                  onClick={() => {
+                    navProfile(tweet.user.username);
+                  }}
+                >
+                  {tweet.user.displayName}
+                </p>
+                <p
+                  style={{ color: "gray", marginLeft: "5px" }}
+                  onClick={() => {
+                    navProfile(tweet.user.username);
+                  }}
+                >
+                  @{tweet.user.username}
+                </p>
+              </div>
+              <TweetText text={tweet.text} />
+              <p style={{ color: "gray", marginTop: "5px" }}>
+                {formatTime(tweet.date)} · {formatDate(tweet.date)}
+              </p>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-evenly",
+                  padding: "10px",
                 }}
               >
-                {tweet.user.displayName}
-              </p>
-              <p
-                style={{ color: "gray", marginLeft: "5px" }}
-                onClick={() => {
-                  navProfile(tweet.user.username);
-                }}
-              >
-                @{tweet.user.username}
-              </p>
+                <Reply userId={userInfo.id} tweetId={tweet.id} />
+                <Retweet userId={userInfo.id} tweetId={tweet.id} />
+                <Like userId={userInfo.id} tweetId={tweet.id} />
+              </div>
+              <ReplyBox
+                onPost={onReplyBoxPost}
+                userId={userInfo.id}
+                originalTweetId={tweet.id}
+              />
             </div>
-            <TweetText text={tweet.text} />
-            <p style={{ color: "gray", marginTop: "5px" }}>
-              {formatTime(tweet.date)} · {formatDate(tweet.date)}
-            </p>
+            {replies.map((reply) => (
+              <RepliesResult key={reply.id} tweet={reply} />
+            ))}
+          </div>
+          <div style={{ height: "20vh", background: "#000000" }}></div>
+          {loading && (
             <div
               style={{
                 display: "flex",
-                justifyContent: "space-evenly",
-                padding: "10px",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "50px",
               }}
             >
-              <Reply userId={userInfo.id} tweetId={tweet.id} />
-              <Retweet userId={userInfo.id} tweetId={tweet.id} />
-              <Like userId={userInfo.id} tweetId={tweet.id} />
+              Loading...
             </div>
-            <ReplyBox
-              onPost={onReplyBoxPost}
-              userId={userInfo.id}
-              originalTweetId={tweet.id}
-            />
-          </div>
-          {replies.map((reply) => (
-            <RepliesResult key={reply.id} tweet={reply} />
-          ))}
+          )}
         </div>
       ) : null}
     </>
