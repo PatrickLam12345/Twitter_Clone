@@ -30,8 +30,8 @@ export default function ReplyBox({ onPost, userId, originalTweetId }) {
           }
         );
         if (response.status == 201) {
-          onPost()
-          setText("")
+          onPost();
+          setText("");
         }
       } catch (error) {
         console.log(error);
@@ -60,7 +60,8 @@ export default function ReplyBox({ onPost, userId, originalTweetId }) {
           backgroundColor: "#000000",
           border: "none",
           outline: "none",
-          overflow: "hidden",
+          overflow: "auto",
+          scrollbarWidth: "none",
         }}
       />
       <button

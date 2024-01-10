@@ -16,11 +16,22 @@ const style = {
   p: 4,
 };
 
+const backdropStyle = {
+  zIndex: (theme) => theme.zIndex.drawer + 1,
+  backgroundColor: "rgba(0, 0, 0, 0.5)",
+};
+
 export default function Tweet({ open, handleClose }) {
   const userInfo = useSelector(selectUserInfo);
   const [text, setText] = useState("");
-  const handleInputChange = (event) => {
-    setText(event.target.value);
+  const [rows, setRows] = useState(6);
+
+  const handleInputChange = (e) => {
+    const lines = e.target.value.split("\n");
+    const newRows = Math.min(lines.length, 15);
+
+    setText(e.target.value);
+    setRows(newRows);
   };
 
   const handleSubmit = (e) => {
@@ -59,9 +70,10 @@ export default function Tweet({ open, handleClose }) {
       open={open}
       onClose={handleClose}
       closeAfterTransition
-      slots={{ backdrop: { ...Backdrop } }}
+      slots={{ backdrop: Backdrop }}
       slotProps={{
         backdrop: {
+          style: backdropStyle,
           timeout: 500,
         },
       }}
@@ -75,27 +87,28 @@ export default function Tweet({ open, handleClose }) {
             padding: "16px",
           }}
         >
-          <form
+          <div
             style={{
               display: "flex",
               flexDirection: "column",
               alignItems: "flex-end",
             }}
           >
-            <input
-              type="text"
-              name="text"
-              placeholder="What's on your mind?"
+            <textarea
+              placeholder="Post Your Reply"
               value={text}
               onChange={handleInputChange}
+              rows={rows}
               style={{
-                width: "100%",
                 padding: "8px",
+                width: "100%",
                 boxSizing: "border-box",
-                marginTop: "16px",
-                borderRadius: "20px",
-                border: "2px solid #1d9bf0",
-                marginBottom: "12px",
+                resize: "none",
+                backgroundColor: "#000000",
+                border: "none",
+                outline: "none",
+                overflow: "auto",
+                scrollbarWidth: "none",
               }}
             />
             <button
@@ -113,9 +126,9 @@ export default function Tweet({ open, handleClose }) {
                 fontWeight: "500",
               }}
             >
-              Tweet!
+              Tweet
             </button>
-          </form>
+          </div>
         </Box>
       </Fade>
     </Modal>

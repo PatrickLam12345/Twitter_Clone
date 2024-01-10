@@ -72,7 +72,14 @@ export default function Reply({ userId, tweetId }) {
         }}
       >
         <Fade in={open}>
-          <Box sx={style}>
+          <Box
+            sx={{
+              ...style,
+              border: "2px solid #1d9bf0",
+              borderRadius: "15px",
+              padding: "16px",
+            }}
+          >
             <ReplyBox
               onPost={handleSubmit}
               userId={userId}
