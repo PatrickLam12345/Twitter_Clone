@@ -7,7 +7,7 @@ const AWS = require("aws-sdk");
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: "us-east-2",
+  region: process.env.AWS_REGION,
 });
 const s3 = new AWS.S3();
 
@@ -475,7 +475,7 @@ const postTweet = async (req, res, next) => {
       isPost: true,
     };
 
-    if (file) {
+    if (file && file.buffer) {
       const s3Key = uuidv4();
       const uploadParams = {
         Bucket: "twitterclonebucket2024",
@@ -526,8 +526,6 @@ const postTweet = async (req, res, next) => {
     }
   });
 };
-
-const getTweetMedia = async (req, res, next) => {};
 
 const getMoreTweets = async (req, res, next) => {
   const { searchQuery, currentPage } = req.query;
@@ -963,6 +961,26 @@ const getFollowingFeed = async (req, res, next) => {
   }
 };
 
+const getS3Media = async (req, res, next) => {
+  const { s3Key } = req.query;
+  const bucketName =
+    "twitterclonebucket2024";
+
+  const params = {
+    Bucket: bucketName,
+    Key: s3Key,
+  };
+
+  try {
+    const s3Object = await s3.getObject(params).promise()
+    res.setHeader('Content-Type', s3Object.ContentType)
+    res.send(s3Object.Body)
+  } catch (error) {
+    console.error("Error retrieving image from S3:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   getUserProfileByUsername,
   getFollowerCount,
@@ -979,7 +997,6 @@ module.exports = {
   postTweet,
   getTweetDetails,
   getTweetReplies,
-  getTweetMedia,
   getMoreTweets,
   getMoreUsers,
 
@@ -1000,4 +1017,6 @@ module.exports = {
   unfollow,
 
   getFollowingFeed,
+
+  getS3Media,
 };

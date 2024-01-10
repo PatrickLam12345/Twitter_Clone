@@ -18,7 +18,6 @@ router.get('/getLikesByUser', authMiddleware.authenticateToken, userControllers.
 router.post('/postTweet', authMiddleware.authenticateToken, userControllers.postTweet)
 router.get('/getTweetDetails', authMiddleware.authenticateToken, userControllers.getTweetDetails)
 router.get('/getTweetReplies', authMiddleware.authenticateToken, userControllers.getTweetReplies)
-router.get('/getTweetMedia', authMiddleware.authenticateToken, userControllers.getTweetMedia)
 router.get('/getMoreTweets', authMiddleware.authenticateToken, userControllers.getMoreTweets)
 router.get('/getMoreUsers', authMiddleware.authenticateToken, userControllers.getMoreUsers)
 
@@ -39,5 +38,7 @@ router.post('/follow', authMiddleware.authenticateToken, userControllers.follow)
 router.delete('/unfollow', authMiddleware.authenticateToken, userControllers.unfollow)
 
 router.get('/getFollowingFeed', authMiddleware.authenticateToken, userControllers.getFollowingFeed)
+
+router.get('/getS3Media', authMiddleware.authenticateToken, userControllers.getS3Media)
 
 module.exports = router
