@@ -48,7 +48,7 @@ export default function Reply({ userId, tweetId }) {
     };
 
     getReplyCount();
-  }, []);
+  }, [tweetId]);
 
   return (
     <div>

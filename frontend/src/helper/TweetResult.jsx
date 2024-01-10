@@ -6,6 +6,7 @@ import Retweet from "./buttons/Retweet";
 import { useSelector } from "react-redux";
 import { selectUserInfo } from "../redux/userInfoSlice";
 import Reply from "./buttons/Reply";
+import TweetMedia from "./TweetMedia";
 
 export default function TweetResult({ tweet }) {
   const userInfo = useSelector(selectUserInfo);
@@ -36,7 +37,7 @@ export default function TweetResult({ tweet }) {
     navigate(`/tweet/${tweetId}`);
   };
 
-  const handleClick = (e) => {
+  const stopPropagation = (e) => {
     e.stopPropagation();
   };
 
@@ -53,7 +54,7 @@ export default function TweetResult({ tweet }) {
           getTweetChain(tweet.id);
         }}
       >
-        <div style={{ padding: "10px" }}>
+        <div style={{ padding: "10px", marginLeft: "20px" }}>
           <p>
             <span style={{ fontWeight: "bold" }}>{tweet.user.displayName}</span>
             <span style={{ color: "gray", marginLeft: "5px" }}>
@@ -63,7 +64,10 @@ export default function TweetResult({ tweet }) {
               - {formatTimeDifference()}
             </span>
           </p>
-          <TweetText text={tweet.text} />
+          <TweetText stopPropagation={stopPropagation} text={tweet.text} />
+          {tweet.s3Key && (
+            <TweetMedia stopPropagation={stopPropagation} s3Key={tweet.s3Key} />
+          )}
         </div>
       </div>
       <div

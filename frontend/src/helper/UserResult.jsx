@@ -14,10 +14,10 @@ export default function UserResult({ stopPropagation, user }) {
     setIsHovered(false);
   };
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const navProfile = (username) => {
-    navigate(`/${username}`)
-  }
+    navigate(`/${username}`);
+  };
 
   useEffect(() => {
     if (user.isFollowing) {
@@ -27,7 +27,7 @@ export default function UserResult({ stopPropagation, user }) {
 
   const userInfo = useSelector(selectUserInfo);
   const follow = async (e, followingId) => {
-    stopPropagation(e)
+    stopPropagation(e);
     const response = await axios.post(
       "http://localhost:3000/api/user/follow",
       {
@@ -44,7 +44,7 @@ export default function UserResult({ stopPropagation, user }) {
   };
 
   const unfollow = async (e, followingId) => {
-    stopPropagation(e)
+    stopPropagation(e);
     const response = await axios.delete(
       "http://localhost:3000/api/user/unfollow",
       {
@@ -67,7 +67,9 @@ export default function UserResult({ stopPropagation, user }) {
         border: "1px solid #333",
         borderTop: "none",
       }}
-      onClick={() => {navProfile(user.username)}}
+      onClick={() => {
+        navProfile(user.username);
+      }}
     >
       <div
         style={{
@@ -77,7 +79,7 @@ export default function UserResult({ stopPropagation, user }) {
           padding: "10px",
         }}
       >
-        <div>
+        <div style={{ marginLeft: "20px" }}>
           <p style={{ fontWeight: "bold" }}>{user.displayName}</p>
           <p style={{ color: "gray" }}> @{user.username}</p>
         </div>
@@ -114,10 +116,11 @@ export default function UserResult({ stopPropagation, user }) {
                   color: "white",
                   borderRadius: "20px",
                   padding: "10px 20px",
-                  fontSize: "16px",
+                  fontSize: "14px",
                   border: "none",
                   cursor: "pointer",
-                  fontWeight: "500",
+                  fontWeight: "550",
+                  width: "120px",
                 }}
               >
                 Follow

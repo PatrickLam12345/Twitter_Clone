@@ -12,11 +12,11 @@ import Logout from "./auth/Logout";
 
 import Explore from "./components/Explore";
 import Home from "./components/Home";
-import Messages from "./components/Messages";
-import Notifications from "./components/Notifications";
 import Profile from "./components/Profile";
 import Tweet from "./components/Tweet";
 import TweetChain from "./components/TweetChain";
+import Followers from "./components/Followers";
+import Following from "./components/Following";
 
 import { selectUserInfo, setUserInfo } from "./redux/userInfoSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -44,16 +44,16 @@ export default function App() {
           element: <Explore />,
         },
         {
-          path: "/notifications",
-          element: <Notifications />,
-        },
-        {
-          path: "/messages",
-          element: <Messages />,
-        },
-        {
           path: "/:username",
           element: <Profile />,
+        },
+        {
+          path: "/:username/followers",
+          element: <Followers />,
+        },
+        {
+          path: "/:username/following",
+          element: <Following />,
         },
         {
           path: "/tweet/:tweetId",
@@ -101,7 +101,7 @@ export default function App() {
 
 
   return (
-    <div className="app">
+    <div>
       <RouterProvider router={router} />
     </div>
   );

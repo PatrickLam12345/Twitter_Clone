@@ -3,6 +3,9 @@ import axios from "axios";
 import { Modal, Backdrop, Box, Fade } from "@mui/material";
 import { useSelector } from "react-redux";
 import { selectUserInfo } from "../redux/userInfoSlice";
+import ImageIcon from "@mui/icons-material/Image";
+import { IconButton } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
 const style = {
   position: "absolute",
@@ -25,6 +28,25 @@ export default function Tweet({ open, handleClose }) {
   const userInfo = useSelector(selectUserInfo);
   const [text, setText] = useState("");
   const [rows, setRows] = useState(6);
+  const [file, setFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+
+  const handleClearImage = () => {
+    setImagePreview(null);
+    setFile(null);
+    const fileInput = document.getElementById("fileInput");
+    if (fileInput) {
+      fileInput.value = null;
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    setFile(selectedFile);
+    console.log(selectedFile);
+    const previewURL = URL.createObjectURL(selectedFile);
+    setImagePreview(previewURL);
+  };
 
   const handleInputChange = (e) => {
     const lines = e.target.value.split("\n");
@@ -44,21 +66,27 @@ export default function Tweet({ open, handleClose }) {
   };
 
   const handlePost = async () => {
+    const formData = new FormData();
+    const descriptionData = JSON.stringify({
+      userId: userInfo.id,
+      text,
+    });
+    formData.append("file", file);
+    formData.append("description", descriptionData);
     try {
       const response = await axios.post(
         `http://localhost:3000/api/user/postTweet`,
-        {
-          text,
-          userId: userInfo.id,
-        },
+        formData,
         {
           headers: {
+            "Content-Type": "multipart/form-data",
             authorization: window.localStorage.getItem("token"),
           },
         }
       );
       if (response.status == 201) {
-        console.log("tweet posted");
+        setText("");
+        handleClearImage();
       }
     } catch (error) {
       console.log(error);
@@ -87,18 +115,12 @@ export default function Tweet({ open, handleClose }) {
             padding: "16px",
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-end",
-            }}
-          >
+          <div>
             <textarea
-              placeholder="Post Your Reply"
+              placeholder="What's on your mind?"
               value={text}
               onChange={handleInputChange}
-              rows={rows}
+              rows={4}
               style={{
                 padding: "8px",
                 width: "100%",
@@ -111,6 +133,46 @@ export default function Tweet({ open, handleClose }) {
                 scrollbarWidth: "none",
               }}
             />
+            {imagePreview && (
+              <div style={{ position: "relative" }}>
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  style={{
+                    width: "100%",
+                    marginTop: "10px",
+                    position: "relative",
+                    cursor: "pointer",
+                    color: "white",
+                  }}
+                />
+                <CloseIcon
+                  style={{ position: "absolute", top: 20, right: 10 }}
+                  onClick={handleClearImage}
+                />
+              </div>
+            )}
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <div style={{ display: "flex" }}>
+              <div>
+                <IconButton aria-label="upload" component="label">
+                  <ImageIcon sx={{ color: "#1DA1F2" }} />
+                  <input
+                    hidden
+                    type="file"
+                    id="fileInput"
+                    accept="image/*"
+                    onChange={(e) => handleFileChange(e)}
+                  />
+                </IconButton>
+              </div>
+            </div>
             <button
               variant="contained"
               color="primary"

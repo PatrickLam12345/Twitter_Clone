@@ -4,7 +4,6 @@ const bcrypt = require("bcrypt");
 const prisma = new PrismaClient();
 
 async function main() {
-  // Seed some users with tweets
   const user1 = await prisma.user.create({
     data: {
       username: "user1",

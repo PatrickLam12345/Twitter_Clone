@@ -35,6 +35,8 @@ export default function Like({ userId, tweetId }) {
         );
         if (response.data.hasLiked) {
           setLiked(true);
+        } else {
+          setLiked(false)
         }
       } catch (error) {
         console.log(error);
@@ -63,7 +65,7 @@ export default function Like({ userId, tweetId }) {
     };
 
     getLikeCount();
-  }, []);
+  }, [tweetId]);
 
   const like = async () => {
     try {

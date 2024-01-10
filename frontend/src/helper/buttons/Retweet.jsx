@@ -31,6 +31,8 @@ export default function Retweet({ userId, tweetId }) {
         );
         if (response.data.hasRetweeted) {
           setRetweeted(true);
+        } else {
+          setRetweeted(false)
         }
       } catch (error) {
         console.log(error);
@@ -59,7 +61,7 @@ export default function Retweet({ userId, tweetId }) {
     };
 
     getRetweetCount();
-  }, []);
+  }, [tweetId]);
 
   const retweet = async () => {
     try {

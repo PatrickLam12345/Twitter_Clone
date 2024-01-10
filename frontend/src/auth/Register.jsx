@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export default function Register() {
+  console.log("hi")
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",

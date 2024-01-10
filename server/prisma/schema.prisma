@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -22,7 +19,6 @@ model User {
   likes            Like[]
   retweets         Retweet[]
   mentions         Mention[]
-  recommendedPosts RecommendedPost[]
 }
 
 model Follower {
@@ -39,6 +35,7 @@ model Tweet {
   id              Int       @id @default(autoincrement())
   userId          Int
   text            String
+  s3Key           String?
   originalTweetId Int?
   isPost          Boolean   @default(false)
   date            DateTime  @default(now())
@@ -78,12 +75,4 @@ model Like {
   tweet   Tweet    @relation(fields: [tweetId], references: [id])
 
   @@unique([userId, tweetId])
-}
-
-model RecommendedPost {
-  id      Int      @id @default(autoincrement())
-  userId  Int
-  tweetId Int
-  date    DateTime @default(now())
-  user    User     @relation(fields: [userId], references: [id])
 }

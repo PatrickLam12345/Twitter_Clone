@@ -1,9 +1,10 @@
 import { useNavigate } from "react-router-dom";
 
-export default function TweetText({ text }) {
+export default function TweetText({ stopPropagation, text }) {
   const navigate = useNavigate();
 
-  const handleClick = (username) => {
+  const handleClick = (e, username) => {
+    stopPropagation(e);
     navigate(`/${username}`);
   };
 
@@ -17,7 +18,7 @@ export default function TweetText({ text }) {
           <span
             key={index}
             style={{ color: "#1DA1F2", cursor: "pointer" }}
-            onClick={() => handleClick(username)}
+            onClick={(e) => handleClick(e, username)}
           >
             {word}{" "}
           </span>

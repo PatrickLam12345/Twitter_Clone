@@ -3,11 +3,20 @@ const router = express.Router()
 const authMiddleware = require('../middleware/authMiddleware')
 const userControllers = require('../controllers/userControllers')
 
-router.get('/getProfileData', authMiddleware.authenticateToken, userControllers.getProfileData)
+router.get('/getUserProfileByUsername', authMiddleware.authenticateToken, userControllers.getUserProfileByUsername)
+router.get('/getFollowerCount', authMiddleware.authenticateToken, userControllers.getFollowerCount)
+router.get('/getFollowingCount', authMiddleware.authenticateToken, userControllers.getFollowingCount)
+router.get('/getFollowers', authMiddleware.authenticateToken, userControllers.getFollowers)
+router.get('/getFollowing', authMiddleware.authenticateToken, userControllers.getFollowing)
+
+router.get('/getTweetsByUser', authMiddleware.authenticateToken, userControllers.getTweetsByUser)
+router.get('/getRepliesByUser', authMiddleware.authenticateToken, userControllers.getRepliesByUser)
+router.get('/getLikesByUser', authMiddleware.authenticateToken, userControllers.getLikesByUser)
 
 router.post('/postTweet', authMiddleware.authenticateToken, userControllers.postTweet)
 router.get('/getTweetDetails', authMiddleware.authenticateToken, userControllers.getTweetDetails)
 router.get('/getTweetReplies', authMiddleware.authenticateToken, userControllers.getTweetReplies)
+router.get('/getTweetMedia', authMiddleware.authenticateToken, userControllers.getTweetMedia)
 router.get('/getMoreTweets', authMiddleware.authenticateToken, userControllers.getMoreTweets)
 router.get('/getMoreUsers', authMiddleware.authenticateToken, userControllers.getMoreUsers)
 
@@ -27,5 +36,6 @@ router.delete('/deleteRetweet', authMiddleware.authenticateToken, userController
 router.post('/follow', authMiddleware.authenticateToken, userControllers.follow)
 router.delete('/unfollow', authMiddleware.authenticateToken, userControllers.unfollow)
 
+router.get('/getFollowingFeed', authMiddleware.authenticateToken, userControllers.getFollowingFeed)
 
 module.exports = router

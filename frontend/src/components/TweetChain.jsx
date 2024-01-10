@@ -8,7 +8,8 @@ import Like from "../helper/buttons/Like";
 import ReplyBox from "../helper/ReplyBox";
 import { useSelector } from "react-redux";
 import { selectUserInfo } from "../redux/userInfoSlice";
-import RepliesResult from "../helper/RepliesResult";
+import TweetResult from "../helper/TweetResult";
+import TweetMedia from "../helper/TweetMedia";
 
 export default function TweetChain() {
   const userInfo = useSelector(selectUserInfo);
@@ -63,7 +64,7 @@ export default function TweetChain() {
           }
         );
         setTweet(response.data);
-        console.log(response.data);
+        console.log(response.data, "gettings3key");
       } catch (error) {
         console.error("Error fetching tweet:", error);
       }
@@ -82,14 +83,14 @@ export default function TweetChain() {
         {
           params: {
             id: tweetId,
-            currentPage: 1
+            currentPage: 1,
           },
           headers: {
             authorization: window.localStorage.getItem("token"),
           },
         }
       );
-      setReplies(response.data)
+      setReplies(response.data);
       setCurrentPage((prevPage) => prevPage + 1);
       console.log(response.data);
     } catch (error) {
@@ -151,6 +152,10 @@ export default function TweetChain() {
     };
   }, [loading, currentPage]);
 
+  const stopPropagation = (e) => {
+    e.stopPropagation();
+  };
+
   return (
     <>
       {tweet ? (
@@ -161,7 +166,7 @@ export default function TweetChain() {
               border: "1px solid #333",
             }}
           >
-            <div style={{ padding: "10px" }}>
+            <div style={{ padding: "10px", marginLeft: "20px" }}>
               <div style={{ display: "inline-block" }}>
                 <p
                   style={{ fontWeight: "bold" }}
@@ -172,7 +177,7 @@ export default function TweetChain() {
                   {tweet.user.displayName}
                 </p>
                 <p
-                  style={{ color: "gray", marginLeft: "5px" }}
+                  style={{ color: "gray" }}
                   onClick={() => {
                     navProfile(tweet.user.username);
                   }}
@@ -180,7 +185,13 @@ export default function TweetChain() {
                   @{tweet.user.username}
                 </p>
               </div>
-              <TweetText text={tweet.text} />
+              <TweetText stopPropagation={stopPropagation} text={tweet.text} />
+              {tweet.s3Key && (
+                <TweetMedia
+                  stopPropagation={stopPropagation}
+                  s3Key={tweet.s3Key}
+                />
+              )}
               <p style={{ color: "gray", marginTop: "5px" }}>
                 {formatTime(tweet.date)} · {formatDate(tweet.date)}
               </p>
@@ -201,8 +212,10 @@ export default function TweetChain() {
                 originalTweetId={tweet.id}
               />
             </div>
+          </div>
+          <div>
             {replies.map((reply) => (
-              <RepliesResult key={reply.id} tweet={reply} />
+              <TweetResult key={reply.id} tweet={reply} />
             ))}
           </div>
           <div style={{ height: "20vh", background: "#000000" }}></div>

@@ -9,6 +9,7 @@ import Tweet from "../components/Tweet";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { selectUserInfo } from "../redux/userInfoSlice";
+import Register from "../auth/Register";
 
 export default function Root() {
   const userInfo = useSelector(selectUserInfo);
@@ -157,5 +158,5 @@ export default function Root() {
         <Outlet />
       </div>
     </div>
-  ) : null;
+  ) : <Outlet />;
 }

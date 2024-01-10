@@ -1,8 +1,307 @@
 const { PrismaClient } = require("@prisma/client");
-const { userInfo } = require("os");
 const prisma = new PrismaClient();
+const multer = require("multer");
+const upload = multer();
+const { v4: uuidv4 } = require("uuid");
+const AWS = require("aws-sdk");
+AWS.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: "us-east-2",
+});
+const s3 = new AWS.S3();
 
-const getProfileData = async (req, res, next) => {};
+const getUserProfileByUsername = async (req, res, next) => {
+  const { username } = req.query;
+
+  try {
+    const userProfile = await prisma.user.findUnique({
+      where: {
+        username: username,
+      },
+      select: {
+        id: true,
+        username: true,
+        displayName: true,
+        registrationDate: true,
+      },
+    });
+
+    if (!userProfile) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json(userProfile);
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const getFollowerCount = async (req, res, next) => {
+  const { userId } = req.query;
+  try {
+    const count = await prisma.follower.count({
+      where: {
+        followingId: Number(userId),
+      },
+    });
+
+    res.status(200).json({ followerCount: count });
+  } catch (error) {
+    console.error("Error getting like count:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const getFollowingCount = async (req, res, next) => {
+  const { userId } = req.query;
+  try {
+    const count = await prisma.follower.count({
+      where: {
+        followerId: Number(userId),
+      },
+    });
+    res.status(200).json({ followingCount: count });
+  } catch (error) {
+    console.error("Error getting like count:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const getFollowers = async (req, res, next) => {
+  const { userId, currentPage } = req.query;
+  const itemsPerPage = 8;
+  try {
+    const followers = await prisma.follower.findMany({
+      where: {
+        followingId: Number(userId),
+      },
+      orderBy: {
+        followDate: "desc",
+      },
+      include: {
+        followingUser: {
+          select: {
+            id: true,
+            username: true,
+            displayName: true,
+          },
+        },
+      },
+      skip: (currentPage - 1) * itemsPerPage,
+      take: itemsPerPage,
+    });
+
+    const updatedFollowers = await Promise.all(
+      followers.map(async (follower) => {
+        const isFollowing = await prisma.follower.findFirst({
+          where: {
+            followerId: Number(userId),
+            followingId: follower.followerId,
+          },
+        });
+
+        return {
+          ...follower,
+          followingUser: {
+            ...follower.followingUser,
+            isFollowing: !!isFollowing,
+          },
+        };
+      })
+    );
+
+    res.json(updatedFollowers);
+  } catch (error) {
+    console.error("Error fetching followers:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const getFollowing = async (req, res, next) => {
+  const { userId, currentPage } = req.query;
+  const itemsPerPage = 8;
+  try {
+    const following = await prisma.follower.findMany({
+      where: {
+        followerId: Number(userId),
+      },
+      orderBy: {
+        followDate: "desc",
+      },
+      include: {
+        followingUser: {
+          select: {
+            id: true,
+            username: true,
+            displayName: true,
+            followers: true,
+          },
+        },
+      },
+      skip: (currentPage - 1) * itemsPerPage,
+      take: itemsPerPage,
+    });
+
+    const updatedFollowing = following.map((follow) => {
+      const isFollowing = follow.followingUser.followers.some(
+        (follower) => follower.followerId === Number(userId)
+      );
+      return {
+        ...follow,
+        followingUser: {
+          ...follow.followingUser,
+          isFollowing,
+        },
+      };
+    });
+
+    res.json(updatedFollowing);
+  } catch (error) {
+    console.error("Error fetching following:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const getTweetsByUser = async (req, res, next) => {
+  const { userId, currentPage } = req.query;
+  const itemsPerPage = 8;
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: Number(userId),
+      },
+      select: {
+        id: true,
+        username: true,
+        displayName: true,
+        registrationDate: true,
+        followers: true,
+        tweets: {
+          orderBy: {
+            date: "desc",
+          },
+          take: itemsPerPage,
+          skip: (currentPage - 1) * itemsPerPage,
+        },
+      },
+    });
+
+    const tweetsWithUser = user.tweets.map((tweet) => ({
+      ...tweet,
+      user: {
+        username: user.username,
+        displayName: user.displayName,
+      },
+    }));
+
+    const modifiedUser = {
+      ...user,
+      tweets: tweetsWithUser,
+    };
+
+    res.status(200).json(modifiedUser);
+  } catch (error) {
+    console.error("Error fetching user tweets:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const getRepliesByUser = async (req, res, next) => {
+  const { userId, currentPage } = req.query;
+  const itemsPerPage = 8;
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: Number(userId),
+      },
+      select: {
+        id: true,
+        username: true,
+        displayName: true,
+        registrationDate: true,
+        followers: true,
+        tweets: {
+          where: {
+            isPost: false,
+          },
+          orderBy: {
+            date: "desc",
+          },
+          take: itemsPerPage,
+          skip: (currentPage - 1) * itemsPerPage,
+        },
+      },
+    });
+
+    const repliesWithUser = user.tweets.map((tweet) => ({
+      ...tweet,
+      user: {
+        username: user.username,
+        displayName: user.displayName,
+      },
+    }));
+
+    const modifiedUser = {
+      ...user,
+      tweets: repliesWithUser,
+    };
+
+    res.status(200).json(modifiedUser);
+  } catch (error) {
+    console.error("Error fetching user replies:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const getLikesByUser = async (req, res, next) => {
+  const { userId, currentPage } = req.query;
+  const itemsPerPage = 8;
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: Number(userId),
+      },
+      select: {
+        id: true,
+        username: true,
+        displayName: true,
+        registrationDate: true,
+        followers: true,
+        likes: {
+          select: {
+            tweet: {
+              select: {
+                id: true,
+                originalTweetId: true,
+                text: true,
+                date: true,
+                user: {
+                  select: {
+                    id: true,
+                    username: true,
+                    displayName: true,
+                  },
+                },
+              },
+            },
+          },
+          orderBy: {
+            date: "desc",
+          },
+          take: itemsPerPage,
+          skip: (currentPage - 1) * itemsPerPage,
+        },
+      },
+    });
+    console.log(user);
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("Error fetching user likes:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
 const getTweetDetails = async (req, res, next) => {
   const { id } = req.query;
@@ -62,19 +361,68 @@ const getTweetReplies = async (req, res, next) => {
 
 const postTweet = async (req, res, next) => {
   try {
-    const { text, userId } = req.body;
-    const tweet = await prisma.tweet.create({
-      data: {
-        userId,
-        text,
-      },
+    const upload = multer().single("file");
+    upload(req, res, async function (err) {
+      if (err instanceof multer.MulterError) {
+        return res.status(400).json({ error: "Multer Error" });
+      } else if (err) {
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+      const file = req.file;
+      console.log(req.body);
+      const { description } = req.body;
+      const descriptionObject = JSON.parse(description);
+      const { userId, text } = descriptionObject;
+
+      if (file) {
+        const s3Key = uuidv4();
+        const uploadParams = {
+          Bucket: "twitterclonebucket2024",
+          Key: s3Key,
+          Body: file.buffer,
+        };
+
+        try {
+          const uploadResult = await s3.upload(uploadParams).promise();
+
+          const newReply = await prisma.tweet.create({
+            data: {
+              userId,
+              text,
+              s3Key,
+              isPost: true,
+            },
+          });
+
+          res.status(201).json(newReply);
+        } catch (error) {
+          console.error(error);
+          res.status(500).json({ error: "Internal Server Error" });
+        }
+      } else {
+        try {
+          const newReply = await prisma.tweet.create({
+            data: {
+              userId,
+              text,
+              isPost: true,
+            },
+          });
+
+          res.status(201).json(newReply);
+        } catch (error) {
+          console.error(error);
+          res.status(500).json({ error: "Internal Server Error" });
+        }
+      }
     });
-    res.status(201).json(tweet);
   } catch (error) {
-    console.error("Error posting tweet:", error);
+    console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+const getTweetMedia = async (req, res, next) => {};
 
 const getMoreTweets = async (req, res, next) => {
   const { searchQuery, currentPage } = req.query;
@@ -162,19 +510,67 @@ const getMoreUsers = async (req, res, next) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 const postReply = async (req, res, next) => {
-  const { userId, originalTweetId, text } = req.body;
   try {
-    const newReply = await prisma.tweet.create({
-      data: {
-        userId,
-        originalTweetId,
-        text,
-      },
+    const upload = multer().single("file");
+    upload(req, res, async function (err) {
+      if (err instanceof multer.MulterError) {
+        return res.status(400).json({ error: "Multer Error" });
+      } else if (err) {
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+      const file = req.file;
+      console.log(req.body);
+      const { description } = req.body;
+      const descriptionObject = JSON.parse(description);
+      const { userId, originalTweetId, text } = descriptionObject;
+
+      if (file) {
+        const s3Key = uuidv4();
+        const uploadParams = {
+          Bucket: "twitterclonebucket2024",
+          Key: s3Key,
+          Body: file.buffer,
+        };
+
+        try {
+          const uploadResult = await s3.upload(uploadParams).promise();
+
+          const newReply = await prisma.tweet.create({
+            data: {
+              userId,
+              originalTweetId,
+              text,
+              s3Key,
+            },
+          });
+
+          res.status(201).json(newReply);
+        } catch (error) {
+          console.error(error);
+          res.status(500).json({ error: "Internal Server Error" });
+        }
+      } else {
+        try {
+          const newReply = await prisma.tweet.create({
+            data: {
+              userId,
+              originalTweetId,
+              text,
+            },
+          });
+
+          res.status(201).json(newReply);
+        } catch (error) {
+          console.error(error);
+          res.status(500).json({ error: "Internal Server Error" });
+        }
+      }
     });
-    res.status(201).json(newReply);
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
@@ -369,7 +765,6 @@ const unfollow = async (req, res, user) => {
   try {
     const { followerId, followingId } = req.body;
 
-    // Send a DELETE request to the server
     await prisma.follower.delete({
       where: {
         followerId_followingId: {
@@ -386,12 +781,83 @@ const unfollow = async (req, res, user) => {
   }
 };
 
+const getFollowingFeed = async (req, res, next) => {
+  const { userId, startIndex } = req.query;
+
+  try {
+    const following = await prisma.follower.findMany({
+      where: {
+        followerId: Number(userId),
+      },
+      orderBy: {
+        followDate: "desc",
+      },
+      select: {
+        followingId: true,
+      },
+    });
+
+    const followingSet = new Set(following.map((follow) => follow.followingId));
+
+    const tweets = [];
+    const total = 8;
+    let totalTweets = 0;
+    while (totalTweets < total) {
+      const userTweets = await prisma.tweet.findMany({
+        where: {
+          userId: {
+            in: [...followingSet],
+          },
+          isPost: true,
+        },
+
+        orderBy: {
+          date: "desc",
+        },
+        skip: totalTweets + Number(startIndex),
+        take: 8,
+        include: {
+          user: {
+            select: {
+              id: true,
+              username: true,
+              displayName: true,
+            },
+          },
+        },
+      });
+
+      if (userTweets.length === 0) {
+        break;
+      }
+
+      tweets.push(
+        ...userTweets.filter((tweet) => followingSet.has(tweet.userId))
+      );
+      totalTweets += userTweets.length;
+    }
+
+    res.json({ tweets, startIndex: startIndex + totalTweets });
+  } catch (error) {
+    console.error("Error fetching following:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 module.exports = {
-  getProfileData,
+  getUserProfileByUsername,
+  getFollowerCount,
+  getFollowingCount,
+  getFollowers,
+  getFollowing,
+  getTweetsByUser,
+  getRepliesByUser,
+  getLikesByUser,
 
   postTweet,
   getTweetDetails,
   getTweetReplies,
+  getTweetMedia,
   getMoreTweets,
   getMoreUsers,
 
@@ -410,4 +876,6 @@ module.exports = {
 
   follow,
   unfollow,
+
+  getFollowingFeed,
 };

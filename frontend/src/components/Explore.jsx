@@ -253,7 +253,16 @@ export default function Explore() {
             ))}
           </div>
         ) : (
-          <div>No Users found</div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "50px",
+            }}
+          >
+            No Users found
+          </div>
         )
       ) : null}
       <div style={{ height: "20vh", background: "#000000" }}></div>
