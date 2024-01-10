@@ -10,6 +10,7 @@ router.get('/getMoreTweets', authMiddleware.authenticateToken, userControllers.g
 router.get('/getMoreUsers', authMiddleware.authenticateToken, userControllers.getMoreUsers)
 
 router.post('/postReply', authMiddleware.authenticateToken, userControllers.postReply)
+router.get('/getReplyCount', authMiddleware.authenticateToken, userControllers.getReplyCount)
 
 router.get('/hasLiked', authMiddleware.authenticateToken, userControllers.hasLiked)
 router.get('/getLikeCount', authMiddleware.authenticateToken, userControllers.getLikeCount)

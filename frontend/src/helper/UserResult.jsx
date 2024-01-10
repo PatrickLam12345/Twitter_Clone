@@ -3,7 +3,7 @@ import { selectUserInfo } from "../redux/userInfoSlice";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-export default function UserResult({ user }) {
+export default function UserResult({ stopPropagation, user }) {
   const [following, setFollowing] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const handleMouseEnter = () => {
@@ -26,7 +26,8 @@ export default function UserResult({ user }) {
   }, []);
 
   const userInfo = useSelector(selectUserInfo);
-  const follow = async (followingId) => {
+  const follow = async (e, followingId) => {
+    stopPropagation(e)
     const response = await axios.post(
       "http://localhost:3000/api/user/follow",
       {
@@ -42,7 +43,8 @@ export default function UserResult({ user }) {
     setFollowing(true);
   };
 
-  const unfollow = async (followingId) => {
+  const unfollow = async (e, followingId) => {
+    stopPropagation(e)
     const response = await axios.delete(
       "http://localhost:3000/api/user/unfollow",
       {
@@ -85,7 +87,7 @@ export default function UserResult({ user }) {
               <button
                 variant="contained"
                 color="primary"
-                onClick={() => unfollow(user.id)}
+                onClick={(e) => unfollow(e, user.id)}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
                 style={{
@@ -106,7 +108,7 @@ export default function UserResult({ user }) {
               <button
                 variant="contained"
                 color="primary"
-                onClick={() => follow(user.id)}
+                onClick={(e) => follow(e, user.id)}
                 style={{
                   backgroundColor: "#1d9bf0",
                   color: "white",

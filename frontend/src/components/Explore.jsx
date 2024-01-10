@@ -42,6 +42,7 @@ export default function Explore() {
   const handleInputChange = (e) => {
     setSearchQuery(e.target.value);
   };
+
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
       if (searchQuery.trim()) {
@@ -53,6 +54,10 @@ export default function Explore() {
         }
       }
     }
+  };
+
+  const stopPropagationHandler = (e) => {
+    e.stopPropagation();
   };
 
   const getTweets = async () => {
@@ -109,7 +114,7 @@ export default function Explore() {
     try {
       console.log(searchQuery);
       console.log(currentPage);
-      console.log(userInfo.id, "id")
+      console.log(userInfo.id, "id");
       const response = await axios.get(
         "http://localhost:3000/api/user/getMoreUsers",
         {
@@ -119,7 +124,7 @@ export default function Explore() {
           params: {
             searchQuery,
             currentPage: 1,
-            userId: Number(userInfo.id)
+            userId: Number(userInfo.id),
           },
         }
       );
@@ -240,7 +245,11 @@ export default function Explore() {
         searchResults.length > 0 ? (
           <div>
             {searchResults.map((result) => (
-              <UserResult key={result.id} user={result} />
+              <UserResult
+                key={result.id}
+                stopPropagation={stopPropagationHandler}
+                user={result}
+              />
             ))}
           </div>
         ) : (

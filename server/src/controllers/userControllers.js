@@ -166,6 +166,22 @@ const postReply = async (req, res, next) => {
   }
 };
 
+const getReplyCount = async (req, res, next) => {
+    const { tweetId } = req.query;
+    try {
+      const tweetRepliesCount = await prisma.tweet.count({
+        where: {
+          originalTweetId: Number(tweetId),
+        },
+      });
+  
+      res.status(200).json({ replyCount: tweetRepliesCount });
+    } catch (error) {
+      console.error("Error getting like count:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  };
+
 const hasLiked = async (req, res, next) => {
   const { userId, tweetId } = req.query;
 
@@ -366,6 +382,7 @@ module.exports = {
   getMoreUsers,
 
   postReply,
+  getReplyCount,
 
   hasLiked,
   getLikeCount,

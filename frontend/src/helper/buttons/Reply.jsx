@@ -1,5 +1,5 @@
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { Modal, Backdrop, Box, Fade } from "@mui/material";
 import ReplyBox from "../ReplyBox";
@@ -20,11 +20,35 @@ export default function Reply({ userId, tweetId }) {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const [replies, setReplies] = useState(0);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = () => {
+    setReplies((prevReplies) => prevReplies + 1);
     handleClose();
   };
+
+  useEffect(() => {
+    const getReplyCount = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3000/api/user/getReplyCount`,
+          {
+            headers: {
+              authorization: window.localStorage.getItem("token"),
+            },
+            params: {
+              tweetId,
+            },
+          }
+        );
+        setReplies(response.data.replyCount);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getReplyCount();
+  }, []);
 
   return (
     <div>
@@ -32,8 +56,9 @@ export default function Reply({ userId, tweetId }) {
         onClick={() => {
           handleOpen();
         }}
+        style={{ display: "flex", alignItems: "center" }}
       >
-        <ChatBubbleOutlineIcon />
+        <ChatBubbleOutlineIcon sx={{ marginRight: "6px" }} /> {replies}
       </div>
       <Modal
         open={open}
@@ -49,7 +74,7 @@ export default function Reply({ userId, tweetId }) {
         <Fade in={open}>
           <Box sx={style}>
             <ReplyBox
-              onPost={handleClose}
+              onPost={handleSubmit}
               userId={userId}
               originalTweetId={tweetId}
             />

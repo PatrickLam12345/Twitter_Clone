@@ -31,6 +31,7 @@ export default function ReplyBox({ onPost, userId, originalTweetId }) {
         );
         if (response.status == 201) {
           onPost()
+          setText("")
         }
       } catch (error) {
         console.log(error);
