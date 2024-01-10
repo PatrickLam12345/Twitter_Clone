@@ -17,8 +17,9 @@ export default function TweetMedia({ stopPropagation, s3Key }) {
       onClick={(e) => {
         stopPropagation(e);
       }}
+      style={{ width: "100%" }}
     >
-      <pre>{xmlContent}</pre>
+      <pre style={{ width: "100%" }}>{xmlContent}</pre>
     </div>
   );
 }

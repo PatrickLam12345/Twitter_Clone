@@ -37,11 +37,14 @@ export default function ReplyBox({ onPost, userId, originalTweetId }) {
 
   const postReply = async () => {
     const formData = new FormData();
+    const usernames = text.match(/@(\w+)/g) || [];
     const descriptionData = JSON.stringify({
       userId,
       originalTweetId,
       text,
+      usernames,
     });
+
     formData.append("file", file);
     formData.append("description", descriptionData);
     if (text.trim()) {
@@ -58,7 +61,7 @@ export default function ReplyBox({ onPost, userId, originalTweetId }) {
         );
         if (response.status == 201) {
           onPost();
-          setText("")
+          setText("");
           handleClearImage();
         }
       } catch (error) {

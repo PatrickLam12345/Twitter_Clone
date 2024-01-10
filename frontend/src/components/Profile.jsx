@@ -109,6 +109,8 @@ export default function Profile() {
           getMoreReplies();
         } else if (activeTab == "likes") {
           getMoreLikes();
+        } else if (activeTab == "retweets") {
+          getMoreRetweets();
         }
       }
     };
@@ -132,6 +134,9 @@ export default function Profile() {
     } else if (tab == "likes") {
       setCurrentPage(0);
       getLikes();
+    } else if (tab == "retweets") {
+      setCurrentPage(0);
+      getRetweets();
     }
   };
 
@@ -240,6 +245,53 @@ export default function Profile() {
       console.error("Error Fetching:", error);
     }
   };
+
+  const getRetweets = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/user/getRetweetsByUser",
+        {
+          headers: {
+            authorization: window.localStorage.getItem("token"),
+          },
+          params: {
+            userId: user.id,
+            currentPage: 1,
+          },
+        }
+      );
+      console.log(response.data, "retweets");
+      setCurrentPage((prevPage) => prevPage + 1);
+      setResults(response.data);
+    } catch (error) {
+      console.error("Error Fetching:", error);
+    }
+  };
+
+  const getMoreRetweets = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/user/getRetwetsByUser",
+        {
+          headers: {
+            authorization: window.localStorage.getItem("token"),
+          },
+          params: {
+            userId: user.id,
+            currentPage: currentPage + 1,
+          },
+        }
+      );
+      setCurrentPage((prevPage) => prevPage + 1);
+      setResults((prevResults) => ({
+        ...prevResults,
+        tweets: [...prevResults.tweets, ...response.data.tweets],
+      }));
+    } catch (error) {
+      console.error("Error Fetching:", error);
+    }
+  };
+
   const getLikes = async () => {
     try {
       const response = await axios.get(
@@ -382,6 +434,12 @@ export default function Profile() {
                 Replies
               </div>
               <div
+                style={tabStyle("retweets")}
+                onClick={() => handleTabClick("retweets")}
+              >
+                Retweets
+              </div>
+              <div
                 style={tabStyle("likes")}
                 onClick={() => handleTabClick("likes")}
               >
@@ -430,6 +488,29 @@ export default function Profile() {
                   }}
                 >
                   User has not replied to anything...
+                </div>
+              )
+            )
+          ) : null}
+
+          {results && activeTab == "retweets" ? (
+            results.tweets?.length > 0 ? (
+              <div>
+                {results.tweets.map((tweet) => (
+                  <TweetResult key={tweet.id} tweet={tweet} />
+                ))}
+              </div>
+            ) : (
+              shouldDisplayNoDataMessage && (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "50px",
+                  }}
+                >
+                  User has not retweeted anything...
                 </div>
               )
             )

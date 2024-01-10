@@ -208,6 +208,53 @@ const getTweetsByUser = async (req, res, next) => {
   }
 };
 
+const getRetweetsByUser = async (req, res, next) => {
+  const { userId, currentPage } = req.query;
+  const itemsPerPage = 8;
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: Number(userId),
+      },
+      select: {
+        id: true,
+        username: true,
+        displayName: true,
+        registrationDate: true,
+        followers: true,
+        retweets: {
+          select: {
+            originalTweet: true,
+          },
+          orderBy: {
+            date: "desc",
+          },
+          take: itemsPerPage,
+          skip: (currentPage - 1) * itemsPerPage,
+        },
+      },
+    });
+
+    const tweetsWithUser = user.retweets.map((retweet) => ({
+      ...retweet.originalTweet,
+      user: {
+        username: user.username,
+        displayName: user.displayName,
+      },
+    }));
+
+    const modifiedUser = {
+      ...user,
+      tweets: tweetsWithUser,
+    };
+
+    res.status(200).json(modifiedUser);
+  } catch (error) {
+    console.error("Error fetching user tweets:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 const getRepliesByUser = async (req, res, next) => {
   const { userId, currentPage } = req.query;
   const itemsPerPage = 8;
@@ -524,7 +571,7 @@ const postReply = async (req, res, next) => {
       console.log(req.body);
       const { description } = req.body;
       const descriptionObject = JSON.parse(description);
-      const { userId, originalTweetId, text } = descriptionObject;
+      const { userId, originalTweetId, text, usernames } = descriptionObject;
 
       if (file) {
         const s3Key = uuidv4();
@@ -546,6 +593,29 @@ const postReply = async (req, res, next) => {
             },
           });
 
+          const mentionedUsers = await prisma.user.findMany({
+            where: {
+              username: {
+                in: usernames,
+              },
+            },
+            select: {
+              id: true,
+            },
+          });
+
+          const filteredMentions = mentionedUsers
+            .filter((mentionedUser) => mentionedUser.id !== userId)
+            .map((mentionedUser) => ({
+              userId,
+              tweetId,
+              mentionedUserId: mentionedUser.id,
+            }));
+
+          await prisma.mention.createMany({
+            data: filteredMentions,
+          });
+
           res.status(201).json(newReply);
         } catch (error) {
           console.error(error);
@@ -559,6 +629,29 @@ const postReply = async (req, res, next) => {
               originalTweetId,
               text,
             },
+          });
+
+          const mentionedUsers = await prisma.user.findMany({
+            where: {
+              username: {
+                in: usernames,
+              },
+            },
+            select: {
+              id: true,
+            },
+          });
+
+          const filteredMentions = mentionedUsers
+            .filter((mentionedUser) => mentionedUser.id !== userId)
+            .map((mentionedUser) => ({
+              userId,
+              tweetId,
+              mentionedUserId: mentionedUser.id,
+            }));
+
+          await prisma.mention.createMany({
+            data: filteredMentions,
           });
 
           res.status(201).json(newReply);
@@ -850,7 +943,9 @@ module.exports = {
   getFollowingCount,
   getFollowers,
   getFollowing,
+
   getTweetsByUser,
+  getRetweetsByUser,
   getRepliesByUser,
   getLikesByUser,
 

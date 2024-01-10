@@ -10,6 +10,7 @@ router.get('/getFollowers', authMiddleware.authenticateToken, userControllers.ge
 router.get('/getFollowing', authMiddleware.authenticateToken, userControllers.getFollowing)
 
 router.get('/getTweetsByUser', authMiddleware.authenticateToken, userControllers.getTweetsByUser)
+router.get('/getRetweetsByUser', authMiddleware.authenticateToken, userControllers.getRetweetsByUser)
 router.get('/getRepliesByUser', authMiddleware.authenticateToken, userControllers.getRepliesByUser)
 router.get('/getLikesByUser', authMiddleware.authenticateToken, userControllers.getLikesByUser)
 

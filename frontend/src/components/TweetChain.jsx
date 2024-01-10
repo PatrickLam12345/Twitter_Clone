@@ -10,6 +10,8 @@ import { useSelector } from "react-redux";
 import { selectUserInfo } from "../redux/userInfoSlice";
 import TweetResult from "../helper/TweetResult";
 import TweetMedia from "../helper/TweetMedia";
+import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 
 export default function TweetChain() {
   const userInfo = useSelector(selectUserInfo);
@@ -166,8 +168,19 @@ export default function TweetChain() {
               border: "1px solid #333",
             }}
           >
-            <div style={{ padding: "10px", marginLeft: "20px" }}>
+            <div style={{ padding: "10px", marginLeft: "20px", marginRight: "20px" }}>
               <div style={{ display: "inline-block" }}>
+                {tweet.originalTweetId ? (
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <ArrowUpwardIcon
+                      sx={{ marginRight: "10px" }}
+                      onClick={() =>
+                        navigate(`/tweet/${tweet.originalTweetId}`)
+                      }
+                    />
+                    <p style={{ color: "gray", fontSize: "15px" }}>View Original Tweet</p>
+                  </div>
+                ) : null}
                 <p
                   style={{ fontWeight: "bold" }}
                   onClick={() => {

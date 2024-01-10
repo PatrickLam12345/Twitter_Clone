@@ -54,7 +54,7 @@ export default function TweetResult({ tweet }) {
           getTweetChain(tweet.id);
         }}
       >
-        <div style={{ padding: "10px", marginLeft: "20px" }}>
+        <div style={{ padding: "10px", marginLeft: "20px", marginRight: "20px" }}>
           <p>
             <span style={{ fontWeight: "bold" }}>{tweet.user.displayName}</span>
             <span style={{ color: "gray", marginLeft: "5px" }}>

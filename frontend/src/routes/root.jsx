@@ -83,7 +83,7 @@ export default function Root() {
             <SearchIcon fontSize="large" /> Explore
           </Link>
         </div>
-        <div>
+        {/* <div>
           <Link
             style={{
               textDecoration: "none",
@@ -112,7 +112,7 @@ export default function Root() {
           >
             <MailOutlineIcon fontSize="large" /> Messages
           </Link>
-        </div>
+        </div> */}
         <div>
           <Link
             style={{
