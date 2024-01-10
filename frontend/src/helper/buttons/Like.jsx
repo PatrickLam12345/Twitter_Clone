@@ -6,7 +6,7 @@ import { selectUserInfo } from "../../redux/userInfoSlice";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { red } from "@mui/material/colors";
 
-export default function Like({ stopPropagation, userId, tweetId }) {
+export default function Like({ userId, tweetId }) {
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
@@ -65,8 +65,7 @@ export default function Like({ stopPropagation, userId, tweetId }) {
     getLikeCount();
   }, []);
 
-  const like = async (e) => {
-    stopPropagation(e)
+  const like = async () => {
     try {
       const response = await axios.post(
         `http://localhost:3000/api/user/like`,
@@ -89,8 +88,7 @@ export default function Like({ stopPropagation, userId, tweetId }) {
     }
   };
 
-  const dislike = async (e) => {
-    stopPropagation(e)
+  const dislike = async () => {
     try {
       const response = await axios.delete(
         `http://localhost:3000/api/user/dislike`,
@@ -113,8 +111,8 @@ export default function Like({ stopPropagation, userId, tweetId }) {
 
   return liked ? (
     <div
-      onClick={(e) => {
-        dislike(e);
+      onClick={() => {
+        dislike();
       }}
       style={{ display: "flex", alignItems: "center" }}
     >
@@ -122,8 +120,8 @@ export default function Like({ stopPropagation, userId, tweetId }) {
     </div>
   ) : (
     <div
-      onClick={(e) => {
-        like(e);
+      onClick={() => {
+        like();
       }}
       style={{ display: "flex", alignItems: "center" }}
     >
