@@ -4,9 +4,10 @@ import TweetResult from "../helper/TweetResult";
 import UserResult from "../helper/UserResult";
 import { useSelector } from "react-redux";
 import { selectUserInfo } from "../redux/userInfoSlice";
+import isAuth from "../auth/isAuth";
 
 export default function Explore() {
-  const userInfo = useSelector(selectUserInfo);
+  const userInfo = isAuth()
   const [hasSearched, setHasSearched] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(0);

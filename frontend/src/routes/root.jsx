@@ -29,7 +29,7 @@ export default function Root() {
     >
       <div
         style={{
-          minWidth: "10%",
+          width: "200px",
           height: "100%",
           backgroundColor: "#000000",
           overflowX: "hidden",
@@ -37,6 +37,7 @@ export default function Root() {
           color: "white",
           overflowY: "hidden",
           padding: "20px",
+          position: "fixed"
         }}
       >
         <div>
@@ -77,42 +78,13 @@ export default function Root() {
               alignItems: "center",
               paddingBottom: "20px",
               gap: "15px",
+              marginLeft: ""
             }}
             to="/explore"
           >
             <SearchIcon fontSize="large" /> Explore
           </Link>
         </div>
-        {/* <div>
-          <Link
-            style={{
-              textDecoration: "none",
-              color: "white",
-              display: "flex",
-              alignItems: "center",
-              paddingBottom: "20px",
-              gap: "15px",
-            }}
-            to="/notifications"
-          >
-            <NotificationsNoneIcon fontSize="large" /> Notifications
-          </Link>
-        </div>
-        <div>
-          <Link
-            style={{
-              textDecoration: "none",
-              color: "white",
-              display: "flex",
-              alignItems: "center",
-              paddingBottom: "20px",
-              gap: "15px",
-            }}
-            to="/messages"
-          >
-            <MailOutlineIcon fontSize="large" /> Messages
-          </Link>
-        </div> */}
         <div>
           <Link
             style={{
@@ -153,6 +125,8 @@ export default function Root() {
           flex: 1,
           height: "100%",
           overflowX: "hidden",
+          marginLeft: "240px",
+          padding: "20px"
         }}
       >
         <Outlet />

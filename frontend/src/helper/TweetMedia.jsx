@@ -30,7 +30,7 @@ export default function TweetMedia({ stopPropagation, s3Key }) {
       }
     };
 
-    // getS3Image();
+    getS3Image();
   }, []);
 
   return (

@@ -39,7 +39,10 @@ export default function ReplyBox({ onPost, userId, originalTweetId, mentionedUse
     console.log(mentionedUser)
     const formData = new FormData();
     const names = (text.match(/@(\w+)/g) || []).map(username => username.slice(1))
-    const usernames = [...names, mentionedUser]
+    const usernames = names
+    if (mentionedUser) {
+      usernames.push(mentionedUser)
+    }
     console.log(usernames)
     const descriptionData = JSON.stringify({
       userId,

@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import UserResult from "../helper/UserResult";
 import axios from "axios";
+import isAuth from "../auth/isAuth";
 
 export default function Followers() {
+  const userInfo = isAuth()
   const [user, setUser] = useState(null);
   const { username } = useParams();
   const [currentPage, setCurrentPage] = useState(0);

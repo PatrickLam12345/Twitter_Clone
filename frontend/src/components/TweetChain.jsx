@@ -12,9 +12,10 @@ import TweetResult from "../helper/TweetResult";
 import TweetMedia from "../helper/TweetMedia";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import isAuth from "../auth/isAuth";
 
 export default function TweetChain() {
-  const userInfo = useSelector(selectUserInfo);
+  const userInfo = isAuth()
   const [replies, setReplies] = useState([]);
   const [tweet, setTweet] = useState(null);
   const [fetchRepliesTrigger, setFetchRepliesTrigger] = useState(false);

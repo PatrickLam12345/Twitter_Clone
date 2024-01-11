@@ -37,6 +37,7 @@ router.delete('/deleteRetweet', authMiddleware.authenticateToken, userController
 router.post('/follow', authMiddleware.authenticateToken, userControllers.follow)
 router.delete('/unfollow', authMiddleware.authenticateToken, userControllers.unfollow)
 
+router.get('/getForYouFeed', authMiddleware.authenticateToken, userControllers.getForYouFeed)
 router.get('/getFollowingFeed', authMiddleware.authenticateToken, userControllers.getFollowingFeed)
 
 router.get('/getS3Media', authMiddleware.authenticateToken, userControllers.getS3Media)

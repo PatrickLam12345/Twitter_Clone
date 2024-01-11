@@ -67,11 +67,13 @@ export default function Tweet({ open, handleClose }) {
 
   const handlePost = async () => {
     const formData = new FormData();
-    const usernames = (text.match(/@(\w+)/g) || []).map(username => username.slice(1))
+    const usernames = (text.match(/@(\w+)/g) || []).map((username) =>
+      username.slice(1)
+    );
     const descriptionData = JSON.stringify({
       userId: userInfo.id,
       text,
-      usernames
+      usernames,
     });
     formData.append("file", file);
     formData.append("description", descriptionData);
@@ -112,6 +114,9 @@ export default function Tweet({ open, handleClose }) {
         <Box
           sx={{
             ...style,
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
             border: "2px solid #1d9bf0",
             borderRadius: "15px",
             padding: "16px",
@@ -122,7 +127,7 @@ export default function Tweet({ open, handleClose }) {
               placeholder="What's on your mind?"
               value={text}
               onChange={handleInputChange}
-              rows={4}
+              rows={8}
               style={{
                 padding: "8px",
                 width: "100%",

@@ -656,27 +656,30 @@ const postReply = async (req, res, next) => {
             ...(s3Key ? { s3Key } : {}),
           },
         });
-        const mentionedUsers = await prisma.user.findMany({
-          where: {
-            username: {
-              in: usernames,
+        console.log(usernames)
+        if (usernames.length > 0) {
+          const mentionedUsers = await prisma.user.findMany({
+            where: {
+              username: {
+                in: usernames,
+              },
             },
-          },
-          select: {
-            id: true,
-          },
-        });
-        const filteredMentions = mentionedUsers
-          .filter((mentionedUser) => mentionedUser.id !== userId)
-          .map((mentionedUser) => ({
-            userId,
-            tweetId: newReply.id,
-            mentionedUserId: mentionedUser.id,
-          }));
-        if (filteredMentions.length > 0) {
-          await prisma.mention.createMany({
-            data: filteredMentions,
+            select: {
+              id: true,
+            },
           });
+          const filteredMentions = mentionedUsers
+            .filter((mentionedUser) => mentionedUser.id !== userId)
+            .map((mentionedUser) => ({
+              userId,
+              tweetId: newReply.id,
+              mentionedUserId: mentionedUser.id,
+            }));
+          if (filteredMentions.length > 0) {
+            await prisma.mention.createMany({
+              data: filteredMentions,
+            });
+          }
         }
 
         res.status(201).json(newReply);
@@ -898,6 +901,44 @@ const unfollow = async (req, res, user) => {
   }
 };
 
+const getForYouFeed = async (req, res, next) => {
+  const { currentPage } = req.query;
+  const itemsPerPage = 8;
+  try {
+    const twentyFourHoursAgo = new Date();
+    twentyFourHoursAgo.setHours(twentyFourHoursAgo.getHours() - 24);
+
+    const mostLikedTweets = await prisma.tweet.findMany({
+      where: {
+        date: {
+          gte: twentyFourHoursAgo,
+        },
+      },
+      orderBy: {
+        likes: {
+          _count: "desc",
+        },
+      },
+      skip: (currentPage - 1) * itemsPerPage,
+      take: itemsPerPage,
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            displayName: true,
+          },
+        },
+      },
+    });
+
+    res.status(200).json({ tweets: mostLikedTweets });
+  } catch (error) {
+    console.error("Error fetching feed:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 const getFollowingFeed = async (req, res, next) => {
   const { userId, startIndex } = req.query;
 
@@ -953,8 +994,7 @@ const getFollowingFeed = async (req, res, next) => {
       );
       totalTweets += userTweets.length;
     }
-    console.log(totalTweets)
-    newStartIndex = startIndex + totalTweets
+    newStartIndex = startIndex + totalTweets;
     res.json({ tweets, startIndex: newStartIndex });
   } catch (error) {
     console.error("Error fetching following:", error);
@@ -1016,6 +1056,7 @@ module.exports = {
   follow,
   unfollow,
 
+  getForYouFeed,
   getFollowingFeed,
 
   getS3Media,

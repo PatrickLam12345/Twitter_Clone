@@ -10,7 +10,6 @@ import TweetMedia from "./TweetMedia";
 
 export default function TweetResult({ tweet }) {
   const userInfo = useSelector(selectUserInfo);
-  console.log(tweet);
 
   const formatTimeDifference = () => {
     const now = new Date();

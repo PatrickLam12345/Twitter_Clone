@@ -1,10 +1,39 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import isAuth from "./isAuth";
+import { Modal, Backdrop, Box, Fade } from "@mui/material";
+
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -85%)",
+  width: 400,
+  bgcolor: "#000000",
+  border: "2px solid #000",
+  boxShadow: 24,
+  p: 4,
+  height: "300px",
+};
+
+const backdropStyle = {
+  zIndex: (theme) => theme.zIndex.drawer + 1,
+  backgroundColor: "rgba(0, 0, 0, 0.5)",
+};
 
 export default function Register() {
-  console.log("hi")
+  const userInfo = isAuth();
   const navigate = useNavigate();
+  const [open, setOpen] = useState(true);
+
+  useEffect(() => {
+    console.log(userInfo);
+    if (userInfo) {
+      navigate("/");
+    }
+  }, [userInfo]);
+
   const [formData, setFormData] = useState({
     email: "",
     username: "",
@@ -43,7 +72,6 @@ export default function Register() {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        height: "100vh",
         width: "60%",
         margin: "auto",
       }}

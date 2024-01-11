@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
 import { useNavigate } from "react-router-dom"
 
-import { useDispatch, useSelector } from 'react-redux'
-import { selectUserInfo, setUserInfo } from '../redux/userInfoSlice'
+import { useDispatch } from 'react-redux'
+import { setUserInfo } from '../redux/userInfoSlice'
 
 
 export default function Logout() {

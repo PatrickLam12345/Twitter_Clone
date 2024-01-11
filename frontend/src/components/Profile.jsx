@@ -3,8 +3,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import TweetResult from "../helper/TweetResult";
+import isAuth from "../auth/isAuth";
 
 export default function Profile() {
+  const userInfo = isAuth();
   const { username } = useParams();
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("posts");
@@ -19,7 +21,7 @@ export default function Profile() {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       setShouldDisplayNoDataMessage(true);
-    }, 1000);
+    }, 2000);
 
     return () => clearTimeout(timeoutId);
   }, [results, activeTab]);

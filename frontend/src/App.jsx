@@ -22,9 +22,9 @@ import { selectUserInfo, setUserInfo } from "./redux/userInfoSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function App() {
-  const dispatch = useDispatch()
-  const userInfo = useSelector(selectUserInfo)
-  console.log(userInfo)
+  const dispatch = useDispatch();
+  const userInfo = useSelector(selectUserInfo);
+  console.log(userInfo);
   const router = createBrowserRouter([
     {
       path: "/",
@@ -65,7 +65,7 @@ export default function App() {
         },
         {
           path: "/register",
-          element: <Register />,
+          element: <Login />,
         },
         {
           path: "/logout",
@@ -98,7 +98,6 @@ export default function App() {
 
     possiblyLogin();
   }, []);
-
 
   return (
     <div>
