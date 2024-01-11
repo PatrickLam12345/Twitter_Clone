@@ -276,7 +276,7 @@ export default function Profile() {
   const getMoreRetweets = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getRetwetsByUser",
+        "http://localhost:3000/api/user/getRetweetsByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),

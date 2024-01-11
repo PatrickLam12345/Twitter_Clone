@@ -392,7 +392,7 @@ const getLikesByUser = async (req, res, next) => {
         },
       },
     });
-    console.log(user);
+
     res.status(200).json(user);
   } catch (error) {
     console.error("Error fetching user likes:", error);
