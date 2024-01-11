@@ -653,7 +653,7 @@ const postReply = async (req, res, next) => {
             userId,
             originalTweetId,
             text,
-            s3Key,
+            ...(s3Key ? { s3Key } : {}),
           },
         });
         const mentionedUsers = await prisma.user.findMany({
@@ -953,8 +953,9 @@ const getFollowingFeed = async (req, res, next) => {
       );
       totalTweets += userTweets.length;
     }
-
-    res.json({ tweets, startIndex: startIndex + totalTweets });
+    console.log(totalTweets)
+    newStartIndex = startIndex + totalTweets
+    res.json({ tweets, startIndex: newStartIndex });
   } catch (error) {
     console.error("Error fetching following:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -963,8 +964,7 @@ const getFollowingFeed = async (req, res, next) => {
 
 const getS3Media = async (req, res, next) => {
   const { s3Key } = req.query;
-  const bucketName =
-    "twitterclonebucket2024";
+  const bucketName = "twitterclonebucket2024";
 
   const params = {
     Bucket: bucketName,
@@ -972,9 +972,9 @@ const getS3Media = async (req, res, next) => {
   };
 
   try {
-    const s3Object = await s3.getObject(params).promise()
-    res.setHeader('Content-Type', s3Object.ContentType)
-    res.send(s3Object.Body)
+    const s3Object = await s3.getObject(params).promise();
+    res.setHeader("Content-Type", s3Object.ContentType);
+    res.send(s3Object.Body);
   } catch (error) {
     console.error("Error retrieving image from S3:", error);
     res.status(500).json({ error: "Internal Server Error" });

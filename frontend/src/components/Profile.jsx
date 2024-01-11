@@ -102,7 +102,7 @@ export default function Profile() {
       const scrollTop = document.documentElement.scrollTop;
       const clientHeight = document.documentElement.clientHeight;
 
-      if (scrollHeight - scrollTop === clientHeight) {
+      if (scrollHeight - scrollTop <= clientHeight + 1) {
         if (activeTab == "posts") {
           getMoreTweets();
         } else if (activeTab == "replies") {
@@ -618,6 +618,7 @@ export default function Profile() {
               )
             )
           ) : null}
+          <div style={{ height: "200px" }}></div>
         </div>
       )}
     </>

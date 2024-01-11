@@ -143,7 +143,7 @@ export default function TweetChain() {
       const scrollTop = document.documentElement.scrollTop;
       const clientHeight = document.documentElement.clientHeight;
 
-      if (scrollHeight - scrollTop === clientHeight) {
+      if (scrollHeight - scrollTop <= clientHeight + 1) {
         fetchMoreReplies();
       }
     };
