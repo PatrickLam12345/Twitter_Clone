@@ -21,6 +21,7 @@ export default function Home() {
   }, [feed, activeTab]);
 
   const getFollowingFeed = async () => {
+    console.log("getMOre");
     try {
       const response = await axios.get(
         "http://localhost:3000/api/user/getFollowingFeed",
@@ -42,6 +43,29 @@ export default function Home() {
     }
   };
 
+  const getMoreFollowingFeed = async () => {
+    console.log("getMOre");
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/user/getFollowingFeed",
+        {
+          headers: {
+            authorization: window.localStorage.getItem("token"),
+          },
+          params: {
+            userId: userInfo.id,
+            startIndex: startIndex,
+          },
+        }
+      );
+      console.log(response.data);
+      setFeed((prevFeed) => [...prevFeed, ...response.data.tweets]);
+      setStartIndex(response.data.startIndex);
+    } catch (error) {
+      console.error("Error Fetching:", error);
+    }
+  };
+
   useEffect(() => {
     if (userInfo) {
       getFollowingFeed();
@@ -54,10 +78,11 @@ export default function Home() {
       const scrollTop = document.documentElement.scrollTop;
       const clientHeight = document.documentElement.clientHeight;
 
-      if (scrollHeight - scrollTop === clientHeight) {
+      if (scrollTop + clientHeight >= scrollHeight - 1) {
         if (activeTab == "forYou") {
-          getMoreTweets();
+          getForYouFeed();
         } else {
+          getMoreFollowingFeed();
         }
       }
     };
@@ -75,6 +100,8 @@ export default function Home() {
 
     if (tab == "forYou") {
     } else {
+      setStartIndex(0);
+      getFollowingFeed();
     }
   };
 
