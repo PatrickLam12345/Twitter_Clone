@@ -54,7 +54,6 @@ export default function TweetChain() {
 
   useEffect(() => {
     const fetchTweet = async () => {
-      console.log(tweet)
       try {
         const response = await axios.get(
           "http://localhost:3000/api/user/getTweetDetails",
@@ -68,7 +67,6 @@ export default function TweetChain() {
           }
         );
         setTweet(response.data);
-        console.log(response.data, "gettings3key");
       } catch (error) {
         console.error("Error fetching tweet:", error);
       }
@@ -78,9 +76,6 @@ export default function TweetChain() {
   }, [tweetId]);
 
   const fetchReplies = async () => {
-    console.log(tweet);
-    console.log(userInfo.id);
-    console.log(tweet.id);
     try {
       const response = await axios.get(
         "http://localhost:3000/api/user/getTweetReplies",
@@ -96,16 +91,12 @@ export default function TweetChain() {
       );
       setReplies(response.data);
       setCurrentPage((prevPage) => prevPage + 1);
-      console.log(response.data);
     } catch (error) {
       console.error("Error fetching tweet replies:", error);
     }
   };
 
   const fetchMoreReplies = async () => {
-    console.log(tweet);
-    console.log(userInfo.id);
-    console.log(tweet.id);
     try {
       const response = await axios.get(
         "http://localhost:3000/api/user/getTweetReplies",
@@ -121,7 +112,6 @@ export default function TweetChain() {
       );
       setReplies((prevReplies) => [...prevReplies, ...response.data]);
       setCurrentPage((prevPage) => prevPage + 1);
-      console.log(response.data);
     } catch (error) {
       console.error("Error fetching tweet replies:", error);
     }

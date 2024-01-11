@@ -43,7 +43,6 @@ export default function Home() {
   };
 
   const getMoreForYouFeed = async () => {
-    console.log(currentPage, "currentpage");
     try {
       const response = await axios.get(
         "http://localhost:3000/api/user/getForYouFeed",

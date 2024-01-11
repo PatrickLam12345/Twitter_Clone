@@ -135,7 +135,6 @@ export default function Login() {
 
   const registerUser = async (formRegister) => {
     try {
-      console.log(formRegister);
       const response = await axios.post(
         "http://localhost:3000/api/auth/register",
         formRegister

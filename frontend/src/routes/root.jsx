@@ -2,14 +2,11 @@ import { Outlet, Link } from "react-router-dom";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import HomeIcon from "@mui/icons-material/Home";
 import SearchIcon from "@mui/icons-material/Search";
-import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
-import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import Tweet from "../components/Tweet";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { selectUserInfo } from "../redux/userInfoSlice";
-import Register from "../auth/Register";
 
 export default function Root() {
   const userInfo = useSelector(selectUserInfo);

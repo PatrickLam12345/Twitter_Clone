@@ -1,13 +1,11 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import TweetResult from "../helper/TweetResult";
 import UserResult from "../helper/UserResult";
-import { useSelector } from "react-redux";
-import { selectUserInfo } from "../redux/userInfoSlice";
 import isAuth from "../auth/isAuth";
 
 export default function Explore() {
-  const userInfo = isAuth()
+  const userInfo = isAuth();
   const [hasSearched, setHasSearched] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
@@ -63,7 +61,7 @@ export default function Explore() {
 
   const getTweets = async () => {
     try {
-      console.log(searchQuery);
+      console.log(searchQuery, "getMOreTWeet");
       console.log(currentPage);
       const response = await axios.get(
         "http://localhost:3000/api/user/getMoreTweets",
@@ -105,7 +103,9 @@ export default function Explore() {
       const tweets = response.data;
       console.log(tweets);
       setCurrentPage((prevPage) => prevPage + 1);
-      setSearchResults((prevResults) => [...prevResults, ...tweets]);
+      if (searchResults) {
+        setSearchResults((prevResults) => [...prevResults, ...tweets]);
+      }
     } catch (error) {
       console.error("Error Fetching:", error);
     }
@@ -156,7 +156,7 @@ export default function Explore() {
         }
       );
       const users = response.data;
-      console.log(users);
+
       setCurrentPage((prevPage) => prevPage + 1);
       setSearchResults((prevResults) => [...prevResults, ...users]);
     } catch (error) {
@@ -170,7 +170,7 @@ export default function Explore() {
       const scrollTop = document.documentElement.scrollTop;
       const clientHeight = document.documentElement.clientHeight;
 
-      if (scrollHeight - scrollTop === clientHeight) {
+      if (scrollHeight - scrollTop <= clientHeight + 1) {
         if (activeTab == "Latest") {
           getMoreTweets();
         } else {
@@ -193,7 +193,16 @@ export default function Explore() {
         value={searchQuery}
         onChange={handleInputChange}
         onKeyDown={handleKeyPress}
-        style={{ padding: "8px", width: "100%", boxSizing: "border-box" }}
+        style={{
+          padding: "30px",
+          height: "40px",
+          width: "100%",
+          boxSizing: "border-box",
+          border: "1px solid #333",
+          backgroundColor: "#000000",
+          color: "white",
+          borderBottom: hasSearched ? "none" : "1px solid #333",
+        }}
       />
       {hasSearched && (
         <nav
@@ -203,7 +212,7 @@ export default function Explore() {
             display: "flex",
             justifyContent: "space-around",
             cursor: "pointer",
-            padding: "10px",
+            padding: "20px",
             boxSizing: "border-box",
             border: "1px solid #333",
           }}

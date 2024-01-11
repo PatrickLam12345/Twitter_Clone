@@ -7,13 +7,11 @@ import Root from "./routes/root";
 import ErrorPage from "./routes/ErrorPage";
 
 import Login from "./auth/Login";
-import Register from "./auth/Register";
 import Logout from "./auth/Logout";
 
 import Explore from "./components/Explore";
 import Home from "./components/Home";
 import Profile from "./components/Profile";
-import Tweet from "./components/Tweet";
 import TweetChain from "./components/TweetChain";
 import Followers from "./components/Followers";
 import Following from "./components/Following";
@@ -24,7 +22,6 @@ import { useDispatch, useSelector } from "react-redux";
 export default function App() {
   const dispatch = useDispatch();
   const userInfo = useSelector(selectUserInfo);
-  console.log(userInfo);
   const router = createBrowserRouter([
     {
       path: "/",

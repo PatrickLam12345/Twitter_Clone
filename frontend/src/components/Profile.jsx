@@ -8,6 +8,7 @@ import isAuth from "../auth/isAuth";
 export default function Profile() {
   const userInfo = isAuth();
   const { username } = useParams();
+  const [isHovered, setIsHovered] = useState(false);
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("posts");
   const [currentPage, setCurrentPage] = useState(0);
@@ -40,7 +41,6 @@ export default function Profile() {
         }
       );
       setUser(response.data);
-      console.log(response.data);
     } catch (error) {
       console.error("Error Fetching:", error);
     }
@@ -159,7 +159,6 @@ export default function Profile() {
   };
 
   const getTweets = async () => {
-    console.log(user.id);
     try {
       const response = await axios.get(
         "http://localhost:3000/api/user/getTweetsByUser",
@@ -220,7 +219,6 @@ export default function Profile() {
           },
         }
       );
-      console.log(response.data, "getRepl");
       setCurrentPage((prevPage) => prevPage + 1);
       setResults(response.data);
     } catch (error) {
@@ -267,7 +265,6 @@ export default function Profile() {
           },
         }
       );
-      console.log(response.data, "retweets");
       setCurrentPage((prevPage) => prevPage + 1);
       setResults(response.data);
     } catch (error) {
@@ -313,7 +310,6 @@ export default function Profile() {
           },
         }
       );
-      console.log(response.data);
       setCurrentPage((prevPage) => prevPage + 1);
       setResults(response.data);
     } catch (error) {
@@ -359,7 +355,6 @@ export default function Profile() {
           },
         }
       );
-      console.log(response.data, "retweets");
       setCurrentPage((prevPage) => prevPage + 1);
       setResults(response.data);
     } catch (error) {
@@ -414,14 +409,49 @@ export default function Profile() {
             }}
           >
             <div style={{ padding: "10px", marginLeft: "10px" }}>
-              <div style={{ display: "inline-block" }}>
-                <p style={{ fontWeight: "bold" }}>{user.displayName}</p>
-                <p style={{ color: "gray" }}>@{user.username}</p>
+              <div style={{ display: "inline-block", width: "100%" }}>
+                <div style={{ display: "flex" }}>
+                  <p
+                    style={{
+                      fontWeight: "bold",
+                      marginTop: "0",
+                      marginBottom: "0",
+                      marginRight: "auto",
+                    }}
+                  >
+                    {user.displayName}
+                  </p>
+                  {userInfo.username === username && (
+                    <button
+                      onMouseEnter={() => setIsHovered(true)}
+                      onMouseLeave={() => setIsHovered(false)}
+                      style={{
+                        backgroundColor: "#000000",
+                        color: isHovered ? "red" : "white",
+                        borderRadius: "20px",
+                        padding: "0px",
+                        fontSize: "14px",
+                        border: `1px solid ${isHovered ? "red" : "white"}`,
+                        cursor: "pointer",
+                        fontWeight: "550",
+                        width: "90px",
+                        height: "30px",
+                      }}
+                      onClick={() => {
+                        navigate("/logout");
+                      }}
+                    >
+                      Logout
+                    </button>
+                  )}
+                </div>
+                <p style={{ color: "gray", marginTop: "3px", marginBottom: "0px"}}>@{user.username}</p>
                 <p
                   style={{
                     color: "gray",
                     display: "flex",
                     alignItems: "center",
+                    marginTop: "3px", marginBottom: "5px"
                   }}
                 >
                   <CalendarMonthIcon

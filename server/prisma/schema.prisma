@@ -46,13 +46,13 @@ model Tweet {
 }
 
 model Mention {
-  id                Int      @id @default(autoincrement())
-  userId            Int
-  tweetId           Int
-  mentionedUsername Int
-  date              DateTime @default(now())
-  tweet             Tweet    @relation(fields: [tweetId], references: [id])
-  mentionedUser     User     @relation(fields: [mentionedUsername], references: [id])
+  id              Int      @id @default(autoincrement())
+  userId          Int
+  tweetId         Int
+  mentionedUserId Int
+  date            DateTime @default(now())
+  tweet           Tweet    @relation(fields: [tweetId], references: [id])
+  mentionedUser   User     @relation(fields: [mentionedUserId], references: [id])
 }
 
 model Retweet {
