@@ -202,9 +202,12 @@ export default function Home() {
       {feed && activeTab === "forYou" ? (
         feed?.length > 0 ? (
           <div>
-            {feed.map((tweet) => (
-              <TweetResult key={tweet.id} tweet={tweet} />
-            ))}
+            <div style={{ height: "52px" }}></div>
+            <div>
+              {feed.map((tweet) => (
+                <TweetResult key={tweet.id} tweet={tweet} />
+              ))}
+            </div>
           </div>
         ) : (
           shouldDisplayNoDataMessage && (
@@ -224,9 +227,12 @@ export default function Home() {
       {feed && activeTab == "following" ? (
         feed.length > 0 ? (
           <div>
-            {feed.map((tweet) => (
-              <TweetResult key={tweet.id} tweet={tweet} />
-            ))}
+            <div style={{ height: "52px" }}></div>
+            <div>
+              {feed.map((tweet) => (
+                <TweetResult key={tweet.id} tweet={tweet} />
+              ))}
+            </div>
           </div>
         ) : (
           shouldDisplayNoDataMessage && (

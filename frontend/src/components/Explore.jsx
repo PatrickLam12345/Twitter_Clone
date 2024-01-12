@@ -178,49 +178,51 @@ export default function Explore() {
 
   return (
     <div>
-      <input
-        placeholder="Search"
-        value={searchQuery}
-        onChange={handleInputChange}
-        onKeyDown={handleKeyPress}
-        style={{
-          padding: "30px",
-          height: "40px",
-          width: "100%",
-          boxSizing: "border-box",
-          border: "1px solid #333",
-          backgroundColor: "#000000",
-          color: "white",
-          borderBottom: hasSearched ? "none" : "1px solid #333",
-        }}
-      />
-      {hasSearched && (
-        <nav
+      <div>
+        <input
+          placeholder="Search"
+          value={searchQuery}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyPress}
           style={{
+            padding: "30px",
+            height: "40px",
             width: "100%",
-            backgroundColor: "#000000",
-            display: "flex",
-            justifyContent: "space-around",
-            cursor: "pointer",
-            padding: "20px",
             boxSizing: "border-box",
             border: "1px solid #333",
+            backgroundColor: "#000000",
+            color: "white",
+            borderBottom: hasSearched ? "none" : "1px solid #333",
           }}
-        >
-          <div
-            style={tabStyle("Latest")}
-            onClick={() => handleTabClick("Latest")}
+        />
+        {hasSearched && (
+          <nav
+            style={{
+              width: "100%",
+              backgroundColor: "#000000",
+              display: "flex",
+              justifyContent: "space-around",
+              cursor: "pointer",
+              padding: "20px",
+              boxSizing: "border-box",
+              border: "1px solid #333",
+            }}
           >
-            Latest
-          </div>
-          <div
-            style={tabStyle("People")}
-            onClick={() => handleTabClick("People")}
-          >
-            People
-          </div>
-        </nav>
-      )}
+            <div
+              style={tabStyle("Latest")}
+              onClick={() => handleTabClick("Latest")}
+            >
+              Latest
+            </div>
+            <div
+              style={tabStyle("People")}
+              onClick={() => handleTabClick("People")}
+            >
+              People
+            </div>
+          </nav>
+        )}
+      </div>
       {searchResults && activeTab == "Latest" ? (
         searchResults.length > 0 ? (
           <div>
