@@ -146,7 +146,6 @@ export default function Tweet({ open, handleClose }) {
                   alt="Preview"
                   style={{
                     maxHeight: "175px",
-                    width: "100%",
                     marginTop: "10px",
                     position: "relative",
                     cursor: "pointer",
