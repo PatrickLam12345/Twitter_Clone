@@ -13,7 +13,6 @@ export default function ReplyBox({ onPost, userId, originalTweetId, mentionedUse
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     setFile(selectedFile);
-    console.log(selectedFile);
     const previewURL = URL.createObjectURL(selectedFile);
     setImagePreview(previewURL);
   };
@@ -43,7 +42,6 @@ export default function ReplyBox({ onPost, userId, originalTweetId, mentionedUse
     if (mentionedUser) {
       usernames.push(mentionedUser)
     }
-    console.log(usernames)
     const descriptionData = JSON.stringify({
       userId,
       originalTweetId,
@@ -111,7 +109,8 @@ export default function ReplyBox({ onPost, userId, originalTweetId, mentionedUse
             src={imagePreview}
             alt="Preview"
             style={{
-              width: "100%",
+              maxHeight: "175px",
+              marginLeft: "19px",
               marginTop: "10px",
               position: "relative",
               cursor: "pointer",

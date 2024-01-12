@@ -19,7 +19,7 @@ export default function Root() {
       style={{
         display: "flex",
         height: "100%",
-        maxWidth: "1300px",
+        maxWidth: "1100px",
         marginLeft: "auto",
         marginRight: "auto",
       }}
@@ -30,7 +30,8 @@ export default function Root() {
           height: "100%",
           backgroundColor: "#000000",
           overflowX: "hidden",
-          paddingTop: "60px",
+          paddingTop: "80px",
+          marginTop: "20px",
           color: "white",
           overflowY: "hidden",
           padding: "20px",

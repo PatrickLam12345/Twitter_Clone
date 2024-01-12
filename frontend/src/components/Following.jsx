@@ -25,7 +25,6 @@ export default function Following() {
         }
       );
       setUser(response.data);
-      console.log(response.data);
     } catch (error) {
       console.error("Error Fetching:", error);
     }
@@ -54,7 +53,6 @@ export default function Following() {
         }
       );
       setFollowing(response.data);
-      console.log(response.data);
       setCurrentPage((prevPage) => prevPage + 1);
     } catch (error) {
       console.error("Error Fetching:", error);
@@ -77,7 +75,6 @@ export default function Following() {
       );
       setFollowing((prevResults) => [...prevResults, ...response.data]);
       setCurrentPage((prevPage) => prevPage + 1);
-      console.log(response.data);
     } catch (error) {
       console.error("Error Fetching:", error);
     }

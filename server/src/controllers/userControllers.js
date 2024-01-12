@@ -656,7 +656,7 @@ const postReply = async (req, res, next) => {
             ...(s3Key ? { s3Key } : {}),
           },
         });
-        console.log(usernames)
+        
         if (usernames.length > 0) {
           const mentionedUsers = await prisma.user.findMany({
             where: {

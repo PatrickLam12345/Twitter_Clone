@@ -25,7 +25,6 @@ export default function Followers() {
         }
       );
       setUser(response.data);
-      console.log(response.data);
     } catch (error) {
       console.error("Error Fetching:", error);
     }
@@ -38,7 +37,6 @@ export default function Followers() {
   }, [username]);
 
   const getFollowers = async () => {
-    console.log(user.id);
 
     try {
       const response = await axios.get(
@@ -54,7 +52,6 @@ export default function Followers() {
         }
       );
       setFollowers(response.data);
-      console.log(response.data);
       setCurrentPage((prevPage) => prevPage + 1);
     } catch (error) {
       console.error("Error Fetching:", error);
@@ -77,7 +74,6 @@ export default function Followers() {
       );
       setFollowers((prevResults) => [...prevResults, ...response.data]);
       setCurrentPage((prevPage) => prevPage + 1);
-      console.log(response.data);
     } catch (error) {
       console.error("Error Fetching:", error);
     }

@@ -61,8 +61,6 @@ export default function Explore() {
 
   const getTweets = async () => {
     try {
-      console.log(searchQuery, "getMOreTWeet");
-      console.log(currentPage);
       const response = await axios.get(
         "http://localhost:3000/api/user/getMoreTweets",
         {
@@ -76,7 +74,6 @@ export default function Explore() {
         }
       );
       const tweets = response.data;
-      console.log(tweets);
       setCurrentPage((prevPage) => prevPage + 1);
       setSearchResults(tweets);
       setHasSearched(true);
@@ -87,7 +84,6 @@ export default function Explore() {
 
   const getMoreTweets = async () => {
     try {
-      console.log(searchQuery);
       const response = await axios.get(
         "http://localhost:3000/api/user/getMoreTweets",
         {
@@ -101,7 +97,6 @@ export default function Explore() {
         }
       );
       const tweets = response.data;
-      console.log(tweets);
       setCurrentPage((prevPage) => prevPage + 1);
       if (searchResults) {
         setSearchResults((prevResults) => [...prevResults, ...tweets]);
@@ -113,9 +108,6 @@ export default function Explore() {
 
   const getUsers = async () => {
     try {
-      console.log(searchQuery);
-      console.log(currentPage);
-      console.log(userInfo.id, "id");
       const response = await axios.get(
         "http://localhost:3000/api/user/getMoreUsers",
         {
@@ -130,7 +122,6 @@ export default function Explore() {
         }
       );
       const users = response.data;
-      console.log(users);
       setCurrentPage((prevPage) => prevPage + 1);
       setSearchResults(users);
       setHasSearched(true);
@@ -141,7 +132,6 @@ export default function Explore() {
 
   const getMoreUsers = async () => {
     try {
-      console.log(searchQuery);
       const response = await axios.get(
         "http://localhost:3000/api/user/getMoreUsers",
         {

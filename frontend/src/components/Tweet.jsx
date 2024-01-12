@@ -43,7 +43,6 @@ export default function Tweet({ open, handleClose }) {
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     setFile(selectedFile);
-    console.log(selectedFile);
     const previewURL = URL.createObjectURL(selectedFile);
     setImagePreview(previewURL);
   };
@@ -146,6 +145,7 @@ export default function Tweet({ open, handleClose }) {
                   src={imagePreview}
                   alt="Preview"
                   style={{
+                    maxHeight: "175px",
                     width: "100%",
                     marginTop: "10px",
                     position: "relative",
