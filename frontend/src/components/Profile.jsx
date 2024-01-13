@@ -520,7 +520,7 @@ export default function Profile() {
                 <div style={{ display: "flex" }}>
                   <img
                     src={imageSrc}
-                    style={{ height: "150px", marginRight: "auto" }}
+                    style={{ height: "150px", marginRight: "auto", marginBottom: "8px" }}
                   />
 
                   {userInfo.username === username && (
