@@ -13,9 +13,10 @@ import TweetMedia from "../helper/TweetMedia";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import isAuth from "../auth/isAuth";
+import TweetProfile from "../helper/TweetProfile";
 
 export default function TweetChain() {
-  const userInfo = isAuth()
+  const userInfo = isAuth();
   const [replies, setReplies] = useState([]);
   const [tweet, setTweet] = useState(null);
   const [fetchRepliesTrigger, setFetchRepliesTrigger] = useState(false);
@@ -24,10 +25,6 @@ export default function TweetChain() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  const navProfile = (username) => {
-    navigate(`/${username}`);
-  };
-
   const formatTime = (timestamp) => {
     const options = {
       hour: "numeric",
@@ -66,6 +63,7 @@ export default function TweetChain() {
             },
           }
         );
+        console.log(response.data);
         setTweet(response.data);
       } catch (error) {
         console.error("Error fetching tweet:", error);
@@ -160,8 +158,14 @@ export default function TweetChain() {
               border: "1px solid #333",
             }}
           >
-            <div style={{ padding: "10px", marginLeft: "20px", marginRight: "20px" }}>
-              <div style={{ display: "inline-block" }}>
+            <div
+              style={{
+                padding: "10px",
+                marginLeft: "20px",
+                marginRight: "20px",
+              }}
+            >
+              <div style={{ display: "inline-block", marginTop: "10px"}}>
                 {tweet.originalTweetId ? (
                   <div style={{ display: "flex", alignItems: "center" }}>
                     <ArrowUpwardIcon
@@ -170,25 +174,18 @@ export default function TweetChain() {
                         navigate(`/tweet/${tweet.originalTweetId}`)
                       }
                     />
-                    <p style={{ color: "gray", fontSize: "15px" }}>View Original Tweet</p>
+                    <p style={{ color: "gray", fontSize: "15px" }}>
+                      View Original Tweet
+                    </p>
                   </div>
                 ) : null}
-                <p
-                  style={{ fontWeight: "bold" }}
-                  onClick={() => {
-                    navProfile(tweet.user.username);
-                  }}
-                >
-                  {tweet.user.displayName}
-                </p>
-                <p
-                  style={{ color: "gray" }}
-                  onClick={() => {
-                    navProfile(tweet.user.username);
-                  }}
-                >
-                  @{tweet.user.username}
-                </p>
+                <TweetProfile
+                  displayName={tweet.user.displayName}
+                  username={tweet.user.username}
+                  date={null}
+                  s3Key={tweet.user.s3Key}
+                  stopPropagation={() => {}}
+                />
               </div>
               <TweetText stopPropagation={stopPropagation} text={tweet.text} />
               {tweet.s3Key && (

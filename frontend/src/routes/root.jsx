@@ -4,15 +4,46 @@ import HomeIcon from "@mui/icons-material/Home";
 import SearchIcon from "@mui/icons-material/Search";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import Tweet from "../components/Tweet";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { selectUserInfo } from "../redux/userInfoSlice";
+import axios from "axios";
 
 export default function Root() {
   const userInfo = useSelector(selectUserInfo);
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  // const [imageSrc, setImageSrc] = useState(null);
+  // useEffect(() => {
+  //   const getS3Image = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         "http://localhost:3000/api/user/getS3Media",
+  //         {
+  //           headers: {
+  //             authorization: window.localStorage.getItem("token"),
+  //           },
+  //           params: {
+  //             s3Key: userInfo.s3Key,
+  //           },
+  //           responseType: "arraybuffer",
+  //         }
+  //       );
+  //       console.log(response);
+  //       const contentType = response.headers["content-type"];
+  //       const blob = new Blob([response.data], { type: contentType });
+  //       const imageUrl = URL.createObjectURL(blob);
+  //       setImageSrc(imageUrl);
+  //       console.log(imageUrl, "root");
+  //       console.log(userInfo, "root")
+  //     } catch (error) {
+  //       console.error("Error Fetching:", error);
+  //     }
+  //   };
+
+  //   getS3Image();
+  // }, [userInfo]);
 
   return userInfo ? (
     <div
@@ -35,7 +66,7 @@ export default function Root() {
           color: "white",
           overflowY: "hidden",
           padding: "20px",
-          position: "fixed"
+          position: "fixed",
         }}
       >
         <div>
@@ -76,7 +107,7 @@ export default function Root() {
               alignItems: "center",
               paddingBottom: "20px",
               gap: "15px",
-              marginLeft: ""
+              marginLeft: "",
             }}
             to="/explore"
           >
@@ -117,6 +148,12 @@ export default function Root() {
           </button>
           <Tweet open={open} handleClose={handleClose} />
         </div>
+        {/* <img
+          onClick={(e) => handleOnClick(e)}
+          src={imageSrc}
+          style={{ height: "50px", width: "auto" }}
+          alt="S3 Image"
+        /> */}
       </div>
       <div
         style={{
@@ -124,11 +161,13 @@ export default function Root() {
           height: "100%",
           overflowX: "hidden",
           marginLeft: "240px",
-          padding: "20px"
+          padding: "20px",
         }}
       >
         <Outlet />
       </div>
     </div>
-  ) : <Outlet />;
+  ) : (
+    <Outlet />
+  );
 }

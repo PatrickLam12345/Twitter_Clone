@@ -57,26 +57,55 @@ export default function TweetProfile({
       return new Date(date).toLocaleString();
     }
   };
+
   const navigate = useNavigate();
   const handleOnClick = (e) => {
     stopPropagation(e);
     navigate(`/${username}`);
   };
+
   return (
     <div style={{ display: "flex", alignItems: "flex-start" }}>
-      <img src={imageSrc} style={{ height: "50px" }} alt="S3 Image" />
-      <div style={{ marginLeft: "5px" }}>
-        <span style={{ fontWeight: "bold" }} onClick={(e) => handleOnClick(e)}>
-          {displayName}
-        </span>
-        <span
-          style={{ color: "gray", marginLeft: "5px" }}
+      <div style={{ width: "50px", textAlign: "center" }}>
+        <img
           onClick={(e) => handleOnClick(e)}
-        >
-          @{username}
-        </span>
-        <span style={{ marginLeft: "5px" }}>- {formatTimeDifference()}</span>
+          src={imageSrc}
+          style={{ height: "50px", width: "auto" }}
+          alt="S3 Image"
+        />
       </div>
+      {date ? (
+        <div style={{ marginLeft: "5px" }}>
+          <span
+            style={{ fontWeight: "bold" }}
+            onClick={(e) => handleOnClick(e)}
+          >
+            {displayName}
+          </span>
+          <span
+            style={{ color: "gray", marginLeft: "5px" }}
+            onClick={(e) => handleOnClick(e)}
+          >
+            @{username}
+          </span>
+          <span style={{ marginLeft: "5px" }}>- {formatTimeDifference()}</span>
+        </div>
+      ) : (
+        <div>
+          <p
+            style={{ fontWeight: "bold", margin: "0", marginLeft: "10px" }}
+            onClick={(e) => handleOnClick(e)}
+          >
+            {displayName}
+          </p>
+          <p
+            style={{ color: "gray", margin: "0", marginLeft: "10px" }}
+            onClick={(e) => handleOnClick(e)}
+          >
+            @{username}
+          </p>
+        </div>
+      )}
     </div>
   );
 }

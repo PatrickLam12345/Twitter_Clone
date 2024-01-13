@@ -4,10 +4,38 @@ import axios from "axios";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import TweetResult from "../helper/TweetResult";
 import isAuth from "../auth/isAuth";
+import { Modal, Backdrop, Box, Fade, IconButton } from "@mui/material";
+import ImageIcon from "@mui/icons-material/Image";
+import CloseIcon from "@mui/icons-material/Close";
+
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -85%)",
+  width: 400,
+  bgcolor: "#000000",
+  border: "2px solid #000",
+  boxShadow: 24,
+  p: 4,
+};
+const backdropStyle = {
+  zIndex: (theme) => theme.zIndex.drawer + 1,
+  backgroundColor: "rgba(0, 0, 0, 0.5)",
+};
+const inputStyle = {
+  padding: "8px",
+  border: "1px solid #1d9bf0",
+  borderRadius: "4px",
+  marginBottom: "10px",
+  backgroundColor: "#000000",
+  color: "white",
+};
 
 export default function Profile() {
   const userInfo = isAuth();
   const { username } = useParams();
+  const [open, setOpen] = useState(false);
   const [imageSrc, setImageSrc] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
   const [user, setUser] = useState(null);
@@ -16,9 +44,28 @@ export default function Profile() {
   const [followers, setFollowers] = useState(0);
   const [following, setFollowing] = useState(0);
   const [results, setResults] = useState(null);
+  const [newDisplayName, setNewDisplayName] = useState("");
   const navigate = useNavigate();
   const [shouldDisplayNoDataMessage, setShouldDisplayNoDataMessage] =
     useState(false);
+  const [file, setFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+
+  const handleClearImage = () => {
+    setImagePreview(null);
+    setFile(null);
+    const fileInput = document.getElementById("fileInput");
+    if (fileInput) {
+      fileInput.value = null;
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    setFile(selectedFile);
+    const previewURL = URL.createObjectURL(selectedFile);
+    setImagePreview(previewURL);
+  };
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -120,7 +167,7 @@ export default function Profile() {
       getTweets();
       getFollowers();
       getFollowing();
-      getS3Image()
+      getS3Image();
     }
   }, [user]);
 
@@ -421,6 +468,38 @@ export default function Profile() {
     return `Joined ${month} ${year}`;
   }
 
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const editProfile = async () => {
+    const formData = new FormData();
+    const descriptionData = JSON.stringify({
+      displayName: newDisplayName,
+      id: userInfo.id
+    });
+    formData.append("file", file);
+    formData.append("description", descriptionData);
+    try {
+      const response = await axios.patch(
+        "http://localhost:3000/api/user/editUserProfile",
+        formData,
+        {
+          headers: {
+            authorization: window.localStorage.getItem("token"),
+          },
+        }
+      );
+      if (response.status == 200) {
+        setImagePreview(null);
+        setFile(null);
+        setNewDisplayName("");
+      }
+    } catch (error) {
+      console.error("Error Updating Profile:", error);
+    }
+  };
+
   return (
     <>
       {user && imageSrc && (
@@ -443,6 +522,149 @@ export default function Profile() {
                     src={imageSrc}
                     style={{ height: "150px", marginRight: "auto" }}
                   />
+
+                  {userInfo.username === username && (
+                    <div>
+                      <button
+                        style={{
+                          backgroundColor: "#000000",
+                          color: "white",
+                          borderRadius: "20px",
+                          padding: "0px",
+                          fontSize: "14px",
+                          border: "1px solid white",
+                          cursor: "pointer",
+                          fontWeight: "550",
+                          width: "115px",
+                          height: "30px",
+                          marginRight: "20px",
+                        }}
+                        onClick={() => {
+                          setOpen(true);
+                        }}
+                      >
+                        Edit Profile
+                      </button>
+                      <Modal
+                        open={open}
+                        onClose={handleClose}
+                        closeAfterTransition
+                        slots={{ backdrop: Backdrop }}
+                        slotProps={{
+                          backdrop: {
+                            style: backdropStyle,
+                            timeout: 500,
+                          },
+                        }}
+                      >
+                        <Fade in={open}>
+                          <Box
+                            sx={{
+                              ...style,
+                              top: "50%",
+                              left: "50%",
+                              transform: "translate(-50%, -50%)",
+                              border: "2px solid #1d9bf0",
+                              borderRadius: "15px",
+                              padding: "16px",
+                            }}
+                          >
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <h3 style={{ marginTop: "10px" }}>
+                                Edit Display Name
+                              </h3>
+                              <form
+                                onSubmit={editProfile}
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  alignItems: "center",
+                                  height: "100%",
+                                  gap: "10px",
+                                }}
+                              >
+                                <input
+                                  placeholder="Display Name"
+                                  value={newDisplayName}
+                                  onChange={(e) =>
+                                    setNewDisplayName(e.target.value)
+                                  }
+                                  name="email"
+                                  style={inputStyle}
+                                />
+                                <h3 style={{ margin: "0px" }}>
+                                  Edit Profile Picture
+                                </h3>
+                                {imagePreview && (
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "flex-start",
+                                    }}
+                                  >
+                                    <img
+                                      src={imagePreview}
+                                      alt="Preview"
+                                      style={{
+                                        maxHeight: "175px",
+                                        cursor: "pointer",
+                                        color: "white",
+                                      }}
+                                    />
+                                    <CloseIcon
+                                      style={{
+                                        cursor: "pointer",
+                                        color: "white",
+                                        marginLeft: "5px",
+                                      }}
+                                      onClick={handleClearImage}
+                                    />
+                                  </div>
+                                )}
+                                <div>
+                                  <IconButton
+                                    aria-label="upload"
+                                    component="label"
+                                  >
+                                    <ImageIcon sx={{ color: "#1DA1F2" }} />
+                                    <input
+                                      hidden
+                                      type="file"
+                                      id="fileInput"
+                                      accept="image/*"
+                                      onChange={(e) => handleFileChange(e)}
+                                    />
+                                  </IconButton>
+                                </div>
+                                <button
+                                  onClick={editProfile}
+                                  style={{
+                                    padding: "8px",
+                                    border: "1px solid #1d9bf0",
+                                    borderRadius: "4px",
+                                    marginBottom: "10px",
+                                    backgroundColor: "#000000",
+                                    color: "white",
+                                    width: "100px",
+                                    padding: "12px",
+                                  }}
+                                >
+                                  Edit Profile
+                                </button>
+                              </form>
+                            </div>
+                          </Box>
+                        </Fade>
+                      </Modal>
+                    </div>
+                  )}
                   {userInfo.username === username && (
                     <button
                       onMouseEnter={() => setIsHovered(true)}
