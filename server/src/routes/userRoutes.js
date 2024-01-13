@@ -2,6 +2,11 @@ const express = require('express')
 const router = express.Router()
 const authMiddleware = require('../middleware/authMiddleware')
 const userControllers = require('../controllers/userControllers')
+const rateLimit = require('express-rate-limit');
+const limiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 10
+  });
 
 router.get('/getUserProfileByUsername', authMiddleware.authenticateToken, userControllers.getUserProfileByUsername)
 router.get('/getFollowerCount', authMiddleware.authenticateToken, userControllers.getFollowerCount)
@@ -15,7 +20,7 @@ router.get('/getMentionsByUser', authMiddleware.authenticateToken, userControlle
 router.get('/getRepliesByUser', authMiddleware.authenticateToken, userControllers.getRepliesByUser)
 router.get('/getLikesByUser', authMiddleware.authenticateToken, userControllers.getLikesByUser)
 
-router.post('/postTweet', authMiddleware.authenticateToken, userControllers.postTweet)
+router.post('/postTweet', authMiddleware.authenticateToken, limiter, userControllers.postTweet)
 router.get('/getTweetDetails', authMiddleware.authenticateToken, userControllers.getTweetDetails)
 router.get('/getTweetReplies', authMiddleware.authenticateToken, userControllers.getTweetReplies)
 router.get('/getMoreTweets', authMiddleware.authenticateToken, userControllers.getMoreTweets)
