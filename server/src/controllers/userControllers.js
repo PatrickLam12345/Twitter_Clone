@@ -24,6 +24,7 @@ const getUserProfileByUsername = async (req, res, next) => {
         username: true,
         displayName: true,
         registrationDate: true,
+        s3Key: true,
       },
     });
 
@@ -80,21 +81,39 @@ const getFollowers = async (req, res, next) => {
       orderBy: {
         followDate: "desc",
       },
-      include: {
-        followingUser: {
-          select: {
-            id: true,
-            username: true,
-            displayName: true,
-          },
-        },
-      },
       skip: (currentPage - 1) * itemsPerPage,
       take: itemsPerPage,
     });
+    console.log(followers);
+
+    const followersWithUserProfile = [];
+
+    for (const follower of followers) {
+      const userProfile = await prisma.user.findUnique({
+        where: {
+          id: follower.followerId,
+        },
+        select: {
+          id: true,
+          username: true,
+          displayName: true,
+          registrationDate: true,
+          s3Key: true,
+        },
+      });
+
+      const followerWithUserProfile = {
+        ...follower,
+        followingUser: userProfile,
+      };
+
+      followersWithUserProfile.push(followerWithUserProfile);
+    }
+
+    console.log(followersWithUserProfile);
 
     const updatedFollowers = await Promise.all(
-      followers.map(async (follower) => {
+      followersWithUserProfile.map(async (follower) => {
         const isFollowing = await prisma.follower.findFirst({
           where: {
             followerId: Number(userId),
@@ -102,15 +121,19 @@ const getFollowers = async (req, res, next) => {
           },
         });
 
-        return {
+        const updatedFollower = {
           ...follower,
           followingUser: {
             ...follower.followingUser,
             isFollowing: !!isFollowing,
           },
         };
+
+        return updatedFollower;
       })
     );
+
+    console.log(updatedFollowers);
 
     res.json(updatedFollowers);
   } catch (error) {
@@ -137,6 +160,7 @@ const getFollowing = async (req, res, next) => {
             username: true,
             displayName: true,
             followers: true,
+            s3Key: true,
           },
         },
       },
@@ -178,6 +202,7 @@ const getTweetsByUser = async (req, res, next) => {
         displayName: true,
         registrationDate: true,
         followers: true,
+        s3Key: true,
         tweets: {
           where: {
             isPost: true,
@@ -196,6 +221,7 @@ const getTweetsByUser = async (req, res, next) => {
       user: {
         username: user.username,
         displayName: user.displayName,
+        s3Key: user.s3Key,
       },
     }));
 
@@ -225,6 +251,7 @@ const getRetweetsByUser = async (req, res, next) => {
         displayName: true,
         registrationDate: true,
         followers: true,
+        s3Key: true,
         retweets: {
           select: {
             originalTweet: true,
@@ -243,6 +270,7 @@ const getRetweetsByUser = async (req, res, next) => {
       user: {
         username: user.username,
         displayName: user.displayName,
+        s3Key: user.s3Key,
       },
     }));
 
@@ -262,42 +290,36 @@ const getMentionsByUser = async (req, res, next) => {
   const { userId, currentPage } = req.query;
   const itemsPerPage = 8;
   try {
-    const user = await prisma.user.findUnique({
+    const mentions = await prisma.mention.findMany({
       where: {
-        id: Number(userId),
+        mentionedUserId: Number(userId),
       },
-      select: {
-        id: true,
-        username: true,
-        displayName: true,
-        registrationDate: true,
-        followers: true,
-        mentions: {
-          select: {
-            tweet: true,
-          },
-          orderBy: {
-            date: "desc",
-          },
-          take: itemsPerPage,
-          skip: (currentPage - 1) * itemsPerPage,
-        },
+      include: {
+        tweet: true,
+        mentioner: true,
       },
+      orderBy: {
+        date: "desc",
+      },
+      take: itemsPerPage,
+      skip: (currentPage - 1) * itemsPerPage,
     });
 
-    const tweetsWithUser = user.mentions.map((mentions) => ({
-      ...mentions.tweet,
+    console.log(mentions, "mentions");
+    const tweetsWithUser = mentions.map((mention) => ({
+      ...mention.tweet,
       user: {
-        username: user.username,
-        displayName: user.displayName,
+        username: mention.mentioner.username,
+        displayName: mention.mentioner.displayName,
+        s3Key: mention.mentioner.s3Key,
       },
     }));
-
+    console.log(tweetsWithUser, "tweetswithuser");
     const modifiedUser = {
-      ...user,
+      ...mentions,
       tweets: tweetsWithUser,
     };
-
+    console.log("mod", modifiedUser);
     res.status(200).json(modifiedUser);
   } catch (error) {
     console.error("Error fetching user tweets:", error);
@@ -319,6 +341,7 @@ const getRepliesByUser = async (req, res, next) => {
         displayName: true,
         registrationDate: true,
         followers: true,
+        s3Key: true,
         tweets: {
           where: {
             isPost: false,
@@ -337,6 +360,7 @@ const getRepliesByUser = async (req, res, next) => {
       user: {
         username: user.username,
         displayName: user.displayName,
+        s3Key: user.s3Key,
       },
     }));
 
@@ -366,6 +390,7 @@ const getLikesByUser = async (req, res, next) => {
         displayName: true,
         registrationDate: true,
         followers: true,
+        s3Key: true,
         likes: {
           select: {
             tweet: {
@@ -379,6 +404,7 @@ const getLikesByUser = async (req, res, next) => {
                     id: true,
                     username: true,
                     displayName: true,
+                    s3Key: true,
                   },
                 },
               },
@@ -549,6 +575,7 @@ const getMoreTweets = async (req, res, next) => {
               id: true,
               username: true,
               displayName: true,
+              s3Key: true,
             },
           },
           likes: {
@@ -589,6 +616,7 @@ const getMoreUsers = async (req, res, next) => {
           id: true,
           username: true,
           displayName: true,
+          s3Key: true,
           resultType: "user",
         },
         skip: (currentPage - 1) * itemsPerPage,
@@ -656,7 +684,7 @@ const postReply = async (req, res, next) => {
             ...(s3Key ? { s3Key } : {}),
           },
         });
-        
+
         if (usernames.length > 0) {
           const mentionedUsers = await prisma.user.findMany({
             where: {
@@ -927,6 +955,7 @@ const getForYouFeed = async (req, res, next) => {
             id: true,
             username: true,
             displayName: true,
+            s3Key: true,
           },
         },
       },
@@ -980,6 +1009,7 @@ const getFollowingFeed = async (req, res, next) => {
               id: true,
               username: true,
               displayName: true,
+              s3Key: true,
             },
           },
         },

@@ -10,6 +10,7 @@ async function main() {
       displayName: "User One",
       password: await bcrypt.hash("password1", 10),
       email: "user1@example.com",
+      s3Key: "3d169697-a654-4daf-839c-5f566d2f609d",
       tweets: {
         create: [
           { text: "Tweet 1 by User One" },
@@ -25,6 +26,7 @@ async function main() {
       displayName: "User Two",
       password: await bcrypt.hash("password2", 10),
       email: "user2@example.com",
+      s3Key: "3d169697-a654-4daf-839c-5f566d2f609d",
       tweets: {
         create: [
           { text: "Tweet 1 by User Two" },

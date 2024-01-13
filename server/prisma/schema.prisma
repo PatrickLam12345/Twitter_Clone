@@ -14,6 +14,7 @@ model User {
   password         String
   email            String     @unique
   registrationDate DateTime   @default(now())
+  s3Key            String
   followers        Follower[]
   tweets           Tweet[]
   likes            Like[]
@@ -52,7 +53,7 @@ model Mention {
   mentionedUserId Int
   date            DateTime @default(now())
   tweet           Tweet    @relation(fields: [tweetId], references: [id])
-  mentionedUser   User     @relation(fields: [mentionedUserId], references: [id])
+  mentioner       User     @relation(fields: [userId], references: [id])
 }
 
 model Retweet {

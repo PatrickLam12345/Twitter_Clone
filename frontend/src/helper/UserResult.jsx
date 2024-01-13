@@ -20,9 +20,40 @@ export default function UserResult({ stopPropagation, user }) {
   };
 
   useEffect(() => {
+    console.log(user);
     if (user.isFollowing) {
       setFollowing(true);
     }
+  }, []);
+
+  const [imageSrc, setImageSrc] = useState(null);
+  useEffect(() => {
+    console.log(user);
+    const getS3Image = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/api/user/getS3Media",
+          {
+            headers: {
+              authorization: window.localStorage.getItem("token"),
+            },
+            params: {
+              s3Key: user.s3Key,
+            },
+            responseType: "arraybuffer",
+          }
+        );
+        console.log(response);
+        const contentType = response.headers["content-type"];
+        const blob = new Blob([response.data], { type: contentType });
+        const imageUrl = URL.createObjectURL(blob);
+        setImageSrc(imageUrl);
+      } catch (error) {
+        console.error("Error Fetching:", error);
+      }
+    };
+
+    getS3Image();
   }, []);
 
   const userInfo = useSelector(selectUserInfo);
@@ -75,16 +106,16 @@ export default function UserResult({ stopPropagation, user }) {
         style={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
           padding: "10px",
         }}
       >
+        <img src={imageSrc} style={{ maxHeight: "175px" }} />
         <div style={{ marginLeft: "20px" }}>
-          <p style={{ fontWeight: "bold" }}>{user.displayName}</p>
-          <p style={{ color: "gray" }}> @{user.username}</p>
+          <p style={{ fontWeight: "bold", margin: "4px", marginBottom: "10px"}}>{user.displayName}</p>
+          <p style={{ color: "gray", margin: "4px", marginTop: "10px"}}> @{user.username}</p>
         </div>
         {userInfo.id === user.id ? null : (
-          <>
+          <div style={{ marginLeft: "auto" }}>
             {following ? (
               <button
                 variant="contained"
@@ -126,7 +157,7 @@ export default function UserResult({ stopPropagation, user }) {
                 Follow
               </button>
             )}
-          </>
+          </div>
         )}
       </div>
     </div>

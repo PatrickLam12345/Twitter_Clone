@@ -53,6 +53,7 @@ export default function Following() {
         }
       );
       setFollowing(response.data);
+      console.log(response.data, "response")
       setCurrentPage((prevPage) => prevPage + 1);
     } catch (error) {
       console.error("Error Fetching:", error);

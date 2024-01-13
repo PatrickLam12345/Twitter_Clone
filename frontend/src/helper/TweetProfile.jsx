@@ -1,11 +1,43 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function TweetProfile({
   stopPropagation,
   displayName,
   username,
-  date
+  date,
+  s3Key,
 }) {
+  const [imageSrc, setImageSrc] = useState(null);
+  useEffect(() => {
+    const getS3Image = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/api/user/getS3Media",
+          {
+            headers: {
+              authorization: window.localStorage.getItem("token"),
+            },
+            params: {
+              s3Key,
+            },
+            responseType: "arraybuffer",
+          }
+        );
+        console.log(response, "pfp");
+        const contentType = response.headers["content-type"];
+        const blob = new Blob([response.data], { type: contentType });
+        const imageUrl = URL.createObjectURL(blob);
+        setImageSrc(imageUrl);
+      } catch (error) {
+        console.error("Error Fetching:", error);
+      }
+    };
+
+    getS3Image();
+  }, []);
+
   const formatTimeDifference = () => {
     const now = new Date();
     const diffInSeconds = Math.floor((now - new Date(date)) / 1000);
@@ -31,17 +63,20 @@ export default function TweetProfile({
     navigate(`/${username}`);
   };
   return (
-    <div>
-      <span style={{ fontWeight: "bold" }} onClick={(e) => handleOnClick(e)}>
-        {displayName}
-      </span>
-      <span
-        style={{ color: "gray", marginLeft: "5px" }}
-        onClick={(e) => handleOnClick(e)}
-      >
-        @{username}
-      </span>
-      <span style={{ marginLeft: "5px" }}>- {formatTimeDifference()}</span>
+    <div style={{ display: "flex", alignItems: "flex-start" }}>
+      <img src={imageSrc} style={{ height: "50px" }} alt="S3 Image" />
+      <div style={{ marginLeft: "5px" }}>
+        <span style={{ fontWeight: "bold" }} onClick={(e) => handleOnClick(e)}>
+          {displayName}
+        </span>
+        <span
+          style={{ color: "gray", marginLeft: "5px" }}
+          onClick={(e) => handleOnClick(e)}
+        >
+          @{username}
+        </span>
+        <span style={{ marginLeft: "5px" }}>- {formatTimeDifference()}</span>
+      </div>
     </div>
   );
 }

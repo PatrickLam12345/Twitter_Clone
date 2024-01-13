@@ -37,14 +37,13 @@ export default function TweetResult({ tweet }) {
         <div
           style={{ padding: "10px", marginLeft: "20px", marginRight: "20px" }}
         >
-          <p>
-            <TweetProfile
-              stopPropagation={stopPropagation}
-              displayName={tweet.user.displayName}
-              username={tweet.user.username}
-              date={tweet.date}
-            />
-          </p>
+          <TweetProfile
+            stopPropagation={stopPropagation}
+            displayName={tweet.user.displayName}
+            username={tweet.user.username}
+            date={tweet.date}
+            s3Key={tweet.user.s3Key}
+          />
           <TweetText stopPropagation={stopPropagation} text={tweet.text} />
           {tweet.s3Key && (
             <TweetMedia stopPropagation={stopPropagation} s3Key={tweet.s3Key} />

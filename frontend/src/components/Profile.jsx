@@ -8,6 +8,7 @@ import isAuth from "../auth/isAuth";
 export default function Profile() {
   const userInfo = isAuth();
   const { username } = useParams();
+  const [imageSrc, setImageSrc] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("posts");
@@ -41,6 +42,30 @@ export default function Profile() {
         }
       );
       setUser(response.data);
+    } catch (error) {
+      console.error("Error Fetching:", error);
+    }
+  };
+
+  const getS3Image = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/user/getS3Media",
+        {
+          headers: {
+            authorization: window.localStorage.getItem("token"),
+          },
+          params: {
+            s3Key: user.s3Key,
+          },
+          responseType: "arraybuffer",
+        }
+      );
+      console.log(response);
+      const contentType = response.headers["content-type"];
+      const blob = new Blob([response.data], { type: contentType });
+      const imageUrl = URL.createObjectURL(blob);
+      setImageSrc(imageUrl);
     } catch (error) {
       console.error("Error Fetching:", error);
     }
@@ -95,6 +120,7 @@ export default function Profile() {
       getTweets();
       getFollowers();
       getFollowing();
+      getS3Image()
     }
   }, [user]);
 
@@ -173,6 +199,7 @@ export default function Profile() {
         }
       );
       const tweets = response.data;
+      console.log(response.data);
       setCurrentPage((prevPage) => prevPage + 1);
       setResults(tweets);
     } catch (error) {
@@ -355,6 +382,7 @@ export default function Profile() {
           },
         }
       );
+      console.log(response.data, "mentions");
       setCurrentPage((prevPage) => prevPage + 1);
       setResults(response.data);
     } catch (error) {
@@ -395,7 +423,7 @@ export default function Profile() {
 
   return (
     <>
-      {user && (
+      {user && imageSrc && (
         <div>
           <div
             style={{
@@ -411,16 +439,10 @@ export default function Profile() {
             <div style={{ padding: "10px", marginLeft: "10px" }}>
               <div style={{ display: "inline-block", width: "100%" }}>
                 <div style={{ display: "flex" }}>
-                  <p
-                    style={{
-                      fontWeight: "bold",
-                      marginTop: "0",
-                      marginBottom: "0",
-                      marginRight: "auto",
-                    }}
-                  >
-                    {user.displayName}
-                  </p>
+                  <img
+                    src={imageSrc}
+                    style={{ height: "150px", marginRight: "auto" }}
+                  />
                   {userInfo.username === username && (
                     <button
                       onMouseEnter={() => setIsHovered(true)}
@@ -445,13 +467,31 @@ export default function Profile() {
                     </button>
                   )}
                 </div>
-                <p style={{ color: "gray", marginTop: "3px", marginBottom: "0px"}}>@{user.username}</p>
+                <p
+                  style={{
+                    fontWeight: "bold",
+                    marginTop: "0",
+                    marginBottom: "0",
+                  }}
+                >
+                  {user.displayName}
+                </p>
+                <p
+                  style={{
+                    color: "gray",
+                    marginTop: "3px",
+                    marginBottom: "0px",
+                  }}
+                >
+                  @{user.username}
+                </p>
                 <p
                   style={{
                     color: "gray",
                     display: "flex",
                     alignItems: "center",
-                    marginTop: "3px", marginBottom: "5px"
+                    marginTop: "3px",
+                    marginBottom: "5px",
                   }}
                 >
                   <CalendarMonthIcon

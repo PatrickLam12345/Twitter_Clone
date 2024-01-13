@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 export default function TweetMedia({ stopPropagation, s3Key }) {
-  const [result, setResult] = useState(null);
+  const [imageSrc, setImageSrc] = useState(null);
   useEffect(() => {
     const getS3Image = async () => {
       try {
@@ -15,12 +15,14 @@ export default function TweetMedia({ stopPropagation, s3Key }) {
             params: {
               s3Key,
             },
+            responseType: "arraybuffer",
           }
         );
+        console.log(response);
         const contentType = response.headers["content-type"];
         const blob = new Blob([response.data], { type: contentType });
         const imageUrl = URL.createObjectURL(blob);
-        setResult(imageUrl);
+        setImageSrc(imageUrl);
       } catch (error) {
         console.error("Error Fetching:", error);
       }
@@ -30,13 +32,15 @@ export default function TweetMedia({ stopPropagation, s3Key }) {
   }, []);
 
   return (
-    <div
-      onClick={(e) => {
-        stopPropagation(e);
-      }}
-      style={{ width: "100%" }}
-    >
-      {result && <img src={result} alt="S3 Image" />}
-    </div>
+    imageSrc ? (
+      <div
+        onClick={(e) => {
+          stopPropagation(e);
+        }}
+        style={{ width: "100%" }}
+      >
+        <img src={imageSrc} style={{ maxHeight: "175px" }} />
+      </div>
+    ) : null
   );
 }

@@ -74,6 +74,7 @@ export default function Explore() {
         }
       );
       const tweets = response.data;
+      console.log(tweets)
       setCurrentPage((prevPage) => prevPage + 1);
       setSearchResults(tweets);
       setHasSearched(true);

@@ -34,6 +34,7 @@ const register = async (req, res, next) => {
         displayName: displayName,
         password: hashedPassword,
         email: email,
+        s3Key: "3d169697-a654-4daf-839c-5f566d2f609d"
       },
     });
     const token = jwt.sign(newUser, process.env.JWT_SECRET_KEY);
