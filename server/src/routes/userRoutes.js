@@ -41,5 +41,6 @@ router.get('/getForYouFeed', authMiddleware.authenticateToken, userControllers.g
 router.get('/getFollowingFeed', authMiddleware.authenticateToken, userControllers.getFollowingFeed)
 
 router.get('/getS3Media', authMiddleware.authenticateToken, userControllers.getS3Media)
+router.patch('/editUserProfile', authMiddleware.authenticateToken, userControllers.editUserProfile)
 
 module.exports = router

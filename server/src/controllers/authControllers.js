@@ -78,6 +78,7 @@ const getUserInfo = (req, res) => {
     username: user.username,
     displayName: user.displayName,
     registrationDate: user.registrationDate,
+    s3Key: user.s3Key
   };
   res.send(userInfo);
 };

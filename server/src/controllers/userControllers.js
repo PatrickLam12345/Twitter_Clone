@@ -1051,6 +1051,84 @@ const getS3Media = async (req, res, next) => {
   }
 };
 
+const editUserProfile = (req, res) => {
+  const upload = multer().single("file");
+  upload(req, res, async (err) => {
+    if (err instanceof multer.MulterError || err) {
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+    const file = req.file;
+    const { description } = req.body;
+    const descriptionObject = JSON.parse(description);
+    const { id, displayName } = descriptionObject;
+
+    if (file && file.buffer) {
+
+      try {
+        const s3Key = uuidv4();
+        const uploadParams = {
+          Bucket: "twitterclonebucket2024",
+          Key: s3Key,
+          Body: file.buffer,
+        };
+
+        const uploadResult = await s3.upload(uploadParams).promise();
+        const user = await prisma.user.findUnique({
+          where: { id: id },
+        });
+  
+        if (!user) {
+          return res.status(404).json({ error: "User not found" });
+        }
+  
+        const updatedUser = await prisma.user.update({
+          where: { id: id },
+          data: {
+            s3Key: file ? s3Key : user.s3Key,
+            displayName: displayName.trim() || user.displayName,
+          },
+        });
+  
+        res.json({
+          success: true,
+          message: "User profile updated successfully",
+          user: updatedUser,
+        });
+      } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+    }
+
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: id },
+      });
+
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const updatedUser = await prisma.user.update({
+        where: { id: id },
+        data: {
+          s3Key: file ? s3Key : user.s3Key,
+          displayName: displayName.trim() || user.displayName,
+        },
+      });
+
+      res.json({
+        success: true,
+        message: "User profile updated successfully",
+        user: updatedUser,
+      });
+    } catch (error) {
+      console.error("Error updating user profile:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  });
+};
+
 module.exports = {
   getUserProfileByUsername,
   getFollowerCount,
@@ -1090,4 +1168,5 @@ module.exports = {
   getFollowingFeed,
 
   getS3Media,
+  editUserProfile,
 };
