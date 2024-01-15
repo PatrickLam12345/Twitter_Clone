@@ -53,7 +53,7 @@ export default function TweetChain() {
     const fetchTweet = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:3000/api/user/getTweetDetails",
+          "https://twitterclonebackend2024.onrender.comapi/user/getTweetDetails",
           {
             params: {
               id: tweetId,
@@ -75,7 +75,7 @@ export default function TweetChain() {
   const fetchReplies = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getTweetReplies",
+        "https://twitterclonebackend2024.onrender.comapi/user/getTweetReplies",
         {
           params: {
             id: tweetId,
@@ -96,7 +96,7 @@ export default function TweetChain() {
   const fetchMoreReplies = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getTweetReplies",
+        "https://twitterclonebackend2024.onrender.comapi/user/getTweetReplies",
         {
           params: {
             id: tweetId,

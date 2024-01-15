@@ -25,7 +25,7 @@ export default function Home() {
   const getForYouFeed = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getForYouFeed",
+        "https://twitterclonebackend2024.onrender.comapi/user/getForYouFeed",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -45,7 +45,7 @@ export default function Home() {
   const getMoreForYouFeed = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getForYouFeed",
+        "https://twitterclonebackend2024.onrender.comapi/user/getForYouFeed",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -65,7 +65,7 @@ export default function Home() {
   const getFollowingFeed = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getFollowingFeed",
+        "https://twitterclonebackend2024.onrender.comapi/user/getFollowingFeed",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -86,7 +86,7 @@ export default function Home() {
   const getMoreFollowingFeed = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getFollowingFeed",
+        "https://twitterclonebackend2024.onrender.comapi/user/getFollowingFeed",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),

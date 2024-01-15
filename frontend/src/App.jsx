@@ -78,7 +78,7 @@ export default function App() {
       if (token) {
         try {
           const userResponse = await axios.get(
-            "http://localhost:3000/api/auth/getUserInfo",
+            "https://twitterclonebackend2024.onrender.comapi/auth/getUserInfo",
             {
               headers: {
                 authorization: token,

@@ -19,7 +19,7 @@ export default function Root() {
   //   const getS3Image = async () => {
   //     try {
   //       const response = await axios.get(
-  //         "http://localhost:3000/api/user/getS3Media",
+  //         "https://twitterclonebackend2024.onrender.comapi/user/getS3Media",
   //         {
   //           headers: {
   //             authorization: window.localStorage.getItem("token"),
