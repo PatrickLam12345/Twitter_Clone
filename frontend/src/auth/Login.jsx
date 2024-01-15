@@ -126,6 +126,7 @@ export default function Login() {
           },
         }
       );
+      console.log(userInfoResponse.data)
       dispatch(setUserInfo(userInfoResponse.data));
     } catch (error) {
       console.log(error);

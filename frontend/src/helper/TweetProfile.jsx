@@ -70,7 +70,7 @@ export default function TweetProfile({
         <img
           onClick={(e) => handleOnClick(e)}
           src={imageSrc}
-          style={{ height: "50px", width: "auto" }}
+          style={{ height: "50px", width: "auto", maxWidth: "50px" }}
           alt="S3 Image"
         />
       </div>

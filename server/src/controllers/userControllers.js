@@ -1063,7 +1063,6 @@ const editUserProfile = (req, res) => {
     const { id, displayName } = descriptionObject;
 
     if (file && file.buffer) {
-
       try {
         const s3Key = uuidv4();
         const uploadParams = {
@@ -1076,11 +1075,11 @@ const editUserProfile = (req, res) => {
         const user = await prisma.user.findUnique({
           where: { id: id },
         });
-  
+
         if (!user) {
           return res.status(404).json({ error: "User not found" });
         }
-  
+
         const updatedUser = await prisma.user.update({
           where: { id: id },
           data: {
@@ -1088,7 +1087,7 @@ const editUserProfile = (req, res) => {
             displayName: displayName.trim() || user.displayName,
           },
         });
-  
+
         res.json({
           success: true,
           message: "User profile updated successfully",
@@ -1098,33 +1097,33 @@ const editUserProfile = (req, res) => {
         console.error(error);
         return res.status(500).json({ error: "Internal Server Error" });
       }
-    }
+    } else {
+      try {
+        const user = await prisma.user.findUnique({
+          where: { id: id },
+        });
 
-    try {
-      const user = await prisma.user.findUnique({
-        where: { id: id },
-      });
+        if (!user) {
+          return res.status(404).json({ error: "User not found" });
+        }
 
-      if (!user) {
-        return res.status(404).json({ error: "User not found" });
+        const updatedUser = await prisma.user.update({
+          where: { id: id },
+          data: {
+            s3Key: file ? s3Key : user.s3Key,
+            displayName: displayName.trim() || user.displayName,
+          },
+        });
+
+        res.json({
+          success: true,
+          message: "User profile updated successfully",
+          user: updatedUser,
+        });
+      } catch (error) {
+        console.error("Error updating user profile:", error);
+        res.status(500).json({ error: "Internal Server Error" });
       }
-
-      const updatedUser = await prisma.user.update({
-        where: { id: id },
-        data: {
-          s3Key: file ? s3Key : user.s3Key,
-          displayName: displayName.trim() || user.displayName,
-        },
-      });
-
-      res.json({
-        success: true,
-        message: "User profile updated successfully",
-        user: updatedUser,
-      });
-    } catch (error) {
-      console.error("Error updating user profile:", error);
-      res.status(500).json({ error: "Internal Server Error" });
     }
   });
 };

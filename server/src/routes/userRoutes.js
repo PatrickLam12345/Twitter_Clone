@@ -2,11 +2,11 @@ const express = require('express')
 const router = express.Router()
 const authMiddleware = require('../middleware/authMiddleware')
 const userControllers = require('../controllers/userControllers')
-const rateLimit = require('express-rate-limit');
-const limiter = rateLimit({
-    windowMs: 60 * 1000,
-    max: 10
-  });
+// const rateLimit = require('express-rate-limit');
+// const limiter = rateLimit({
+//     windowMs: 60 * 1000,
+//     max: 10
+//   });
 
 router.get('/getUserProfileByUsername', authMiddleware.authenticateToken, userControllers.getUserProfileByUsername)
 router.get('/getFollowerCount', authMiddleware.authenticateToken, userControllers.getFollowerCount)
