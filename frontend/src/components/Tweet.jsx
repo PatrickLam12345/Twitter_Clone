@@ -78,7 +78,7 @@ export default function Tweet({ open, handleClose }) {
     formData.append("description", descriptionData);
     try {
       const response = await axios.post(
-        `https://twitterclonebackend2024.onrender.comapi/user/postTweet`,
+        `https://twitterclonebackend2024.onrender.com//api/user/postTweet`,
         formData,
         {
           headers: {

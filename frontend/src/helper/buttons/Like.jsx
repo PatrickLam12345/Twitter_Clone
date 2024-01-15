@@ -22,7 +22,7 @@ export default function Like({ userId, tweetId }) {
     const getLikedStatus = async () => {
       try {
         const response = await axios.get(
-          `https://twitterclonebackend2024.onrender.comapi/user/hasLiked`,
+          `https://twitterclonebackend2024.onrender.com//api/user/hasLiked`,
           {
             headers: {
               authorization: window.localStorage.getItem("token"),
@@ -48,7 +48,7 @@ export default function Like({ userId, tweetId }) {
     const getLikeCount = async () => {
       try {
         const response = await axios.get(
-          `https://twitterclonebackend2024.onrender.comapi/user/getLikeCount`,
+          `https://twitterclonebackend2024.onrender.com//api/user/getLikeCount`,
           {
             headers: {
               authorization: window.localStorage.getItem("token"),
@@ -70,7 +70,7 @@ export default function Like({ userId, tweetId }) {
   const like = async () => {
     try {
       const response = await axios.post(
-        `https://twitterclonebackend2024.onrender.comapi/user/like`,
+        `https://twitterclonebackend2024.onrender.com//api/user/like`,
         {
           userId,
           tweetId,
@@ -93,7 +93,7 @@ export default function Like({ userId, tweetId }) {
   const dislike = async () => {
     try {
       const response = await axios.delete(
-        `https://twitterclonebackend2024.onrender.comapi/user/dislike`,
+        `https://twitterclonebackend2024.onrender.com//api/user/dislike`,
         {
           data: {
             userId,

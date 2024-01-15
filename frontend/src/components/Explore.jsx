@@ -62,7 +62,7 @@ export default function Explore() {
   const getTweets = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.comapi/user/getMoreTweets",
+        "https://twitterclonebackend2024.onrender.com//api/user/getMoreTweets",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -85,7 +85,7 @@ export default function Explore() {
   const getMoreTweets = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.comapi/user/getMoreTweets",
+        "https://twitterclonebackend2024.onrender.com//api/user/getMoreTweets",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -109,7 +109,7 @@ export default function Explore() {
   const getUsers = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.comapi/user/getMoreUsers",
+        "https://twitterclonebackend2024.onrender.com//api/user/getMoreUsers",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -133,7 +133,7 @@ export default function Explore() {
   const getMoreUsers = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.comapi/user/getMoreUsers",
+        "https://twitterclonebackend2024.onrender.com//api/user/getMoreUsers",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
