@@ -15,7 +15,7 @@ export default function TweetText({ stopPropagation, text }) {
         const username = word.slice(1);
         return (
           <span
-            key={username} // Use a unique identifier if available
+            key={username} 
             style={{ color: "#1DA1F2", cursor: "pointer" }}
             onClick={(e) => handleClick(e, username)}
           >

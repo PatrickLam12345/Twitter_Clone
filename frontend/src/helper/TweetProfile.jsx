@@ -25,7 +25,6 @@ export default function TweetProfile({
             responseType: "arraybuffer",
           }
         );
-        console.log(response, "pfp");
         const contentType = response.headers["content-type"];
         const blob = new Blob([response.data], { type: contentType });
         const imageUrl = URL.createObjectURL(blob);

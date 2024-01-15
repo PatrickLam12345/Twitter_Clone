@@ -8,6 +8,7 @@ const userControllers = require('../controllers/userControllers')
 //     max: 10
 //   });
 
+router.get('/getUserProfileAndIsFollowingByUsername', authMiddleware.authenticateToken, userControllers.getUserProfileAndIsFollowingByUsername)
 router.get('/getUserProfileByUsername', authMiddleware.authenticateToken, userControllers.getUserProfileByUsername)
 router.get('/getFollowerCount', authMiddleware.authenticateToken, userControllers.getFollowerCount)
 router.get('/getFollowingCount', authMiddleware.authenticateToken, userControllers.getFollowingCount)

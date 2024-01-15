@@ -85,23 +85,25 @@ export default function Profile() {
   }, [results, activeTab]);
 
   const getUserProfile = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:3000/api/user/getUserProfileByUsername",
-        {
-          headers: {
-            authorization: window.localStorage.getItem("token"),
-          },
-          params: {
-            username,
-            userId: userInfo.id,
-          },
-        }
-      );
-      setUser(response.data);
-      setIsFollowing(response.data.isFollowing);
-    } catch (error) {
-      console.error("Error Fetching:", error);
+    if (username && userInfo) {
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/api/user/getUserProfileAndIsFollowingByUsername",
+          {
+            headers: {
+              authorization: window.localStorage.getItem("token"),
+            },
+            params: {
+              username,
+              userId: userInfo.id,
+            },
+          }
+        );
+        setUser(response.data);
+        setIsFollowing(response.data.isFollowing);
+      } catch (error) {
+        console.error("Error Fetching:", error);
+      }
     }
   };
 
@@ -202,7 +204,7 @@ export default function Profile() {
     if (username) {
       getUserProfile();
     }
-  }, [username]);
+  }, [username, userInfo]);
 
   useEffect(() => {
     if (user) {
@@ -238,7 +240,7 @@ export default function Profile() {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [activeTab, currentPage]);
+  }, [activeTab, currentPage, userInfo?.id]);
 
   const handleTabClick = (tab) => {
     if (activeTab !== tab) {
@@ -723,7 +725,9 @@ export default function Profile() {
                             borderRadius: "20px",
                             padding: "10px 20px",
                             fontSize: "14px",
-                            border: `1px solid ${isFollowHovered ? "red" : "white"}`,
+                            border: `1px solid ${
+                              isFollowHovered ? "red" : "white"
+                            }`,
                             cursor: "pointer",
                             fontWeight: "550",
                             width: "120px",

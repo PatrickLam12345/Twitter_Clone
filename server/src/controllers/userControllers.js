@@ -12,6 +12,34 @@ AWS.config.update({
 const s3 = new AWS.S3();
 
 const getUserProfileByUsername = async (req, res, next) => {
+  const { username } = req.query;
+
+  try {
+    const userProfile = await prisma.user.findUnique({
+      where: {
+        username: username,
+      },
+      select: {
+        id: true,
+        username: true,
+        displayName: true,
+        registrationDate: true,
+        s3Key: true,
+      },
+    });
+
+    if (!userProfile) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json(userProfile);
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const getUserProfileAndIsFollowingByUsername = async (req, res, next) => {
   const { username, userId } = req.query;
 
   try {
@@ -1131,6 +1159,7 @@ const editUserProfile = (req, res) => {
 
 module.exports = {
   getUserProfileByUsername,
+  getUserProfileAndIsFollowingByUsername,
   getFollowerCount,
   getFollowingCount,
   getFollowers,
