@@ -54,7 +54,7 @@ export default function ReplyBox({ onPost, userId, originalTweetId, mentionedUse
     if (text.trim()) {
       try {
         const response = await axios.post(
-          `http://localhost:3000/api/user/postReply`,
+          `https://twitterclonebackend2024.onrender.com/api/user/postReply`,
           formData,
           {
             headers: {

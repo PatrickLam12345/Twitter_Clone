@@ -78,7 +78,7 @@ export default function Profile() {
   const getUserProfile = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getUserProfileByUsername",
+        "https://twitterclonebackend2024.onrender.com/api/user/getUserProfileByUsername",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -97,7 +97,7 @@ export default function Profile() {
   const getS3Image = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getS3Media",
+        "https://twitterclonebackend2024.onrender.com/api/user/getS3Media",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -121,7 +121,7 @@ export default function Profile() {
   const getFollowers = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getFollowerCount",
+        "https://twitterclonebackend2024.onrender.com/api/user/getFollowerCount",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -140,7 +140,7 @@ export default function Profile() {
   const getFollowing = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getFollowingCount",
+        "https://twitterclonebackend2024.onrender.com/api/user/getFollowingCount",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -234,7 +234,7 @@ export default function Profile() {
   const getTweets = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getTweetsByUser",
+        "https://twitterclonebackend2024.onrender.com/api/user/getTweetsByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -257,7 +257,7 @@ export default function Profile() {
   const getMoreTweets = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getTweetsByUser",
+        "https://twitterclonebackend2024.onrender.com/api/user/getTweetsByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -282,7 +282,7 @@ export default function Profile() {
   const getReplies = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getRepliesByUser",
+        "https://twitterclonebackend2024.onrender.com/api/user/getRepliesByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -303,7 +303,7 @@ export default function Profile() {
   const getMoreReplies = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getRepliesByUser",
+        "https://twitterclonebackend2024.onrender.com/api/user/getRepliesByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -328,7 +328,7 @@ export default function Profile() {
   const getRetweets = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getRetweetsByUser",
+        "https://twitterclonebackend2024.onrender.com/api/user/getRetweetsByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -349,7 +349,7 @@ export default function Profile() {
   const getMoreRetweets = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getRetweetsByUser",
+        "https://twitterclonebackend2024.onrender.com/api/user/getRetweetsByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -373,7 +373,7 @@ export default function Profile() {
   const getLikes = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getLikesByUser",
+        "https://twitterclonebackend2024.onrender.com/api/user/getLikesByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -394,7 +394,7 @@ export default function Profile() {
   const getMoreLikes = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getLikesByUser",
+        "https://twitterclonebackend2024.onrender.com/api/user/getLikesByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -418,7 +418,7 @@ export default function Profile() {
   const getMentions = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getMentionsByUser",
+        "https://twitterclonebackend2024.onrender.com/api/user/getMentionsByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -440,7 +440,7 @@ export default function Profile() {
   const getMoreMentions = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getMentionsByUser",
+        "https://twitterclonebackend2024.onrender.com/api/user/getMentionsByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -482,7 +482,7 @@ export default function Profile() {
     formData.append("description", descriptionData);
     try {
       const response = await axios.patch(
-        "http://localhost:3000/api/user/editUserProfile",
+        "https://twitterclonebackend2024.onrender.com/api/user/editUserProfile",
         formData,
         {
           headers: {
@@ -653,7 +653,6 @@ export default function Profile() {
                                     backgroundColor: "#000000",
                                     color: "white",
                                     width: "100px",
-                                    padding: "12px",
                                   }}
                                 >
                                   Edit Profile
