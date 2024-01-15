@@ -63,7 +63,6 @@ export default function TweetChain() {
             },
           }
         );
-        console.log(response.data);
         setTweet(response.data);
       } catch (error) {
         console.error("Error fetching tweet:", error);

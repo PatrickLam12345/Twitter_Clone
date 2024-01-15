@@ -126,10 +126,10 @@ export default function Login() {
           },
         }
       );
-      console.log(userInfoResponse.data)
+      (userInfoResponse.data)
       dispatch(setUserInfo(userInfoResponse.data));
     } catch (error) {
-      console.log(error);
+      (error);
     }
   };
 

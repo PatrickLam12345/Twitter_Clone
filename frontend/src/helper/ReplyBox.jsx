@@ -35,7 +35,6 @@ export default function ReplyBox({ onPost, userId, originalTweetId, mentionedUse
   };
 
   const postReply = async () => {
-    console.log(mentionedUser)
     const formData = new FormData();
     const names = (text.match(/@(\w+)/g) || []).map(username => username.slice(1))
     const usernames = names

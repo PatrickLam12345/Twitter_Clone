@@ -37,8 +37,6 @@ export default function Following() {
   }, [username]);
 
   const getFollowing = async () => {
-    console.log(user.id);
-
     try {
       const response = await axios.get(
         "http://localhost:3000/api/user/getFollowing",
@@ -53,7 +51,6 @@ export default function Following() {
         }
       );
       setFollowing(response.data);
-      console.log(response.data, "response")
       setCurrentPage((prevPage) => prevPage + 1);
     } catch (error) {
       console.error("Error Fetching:", error);

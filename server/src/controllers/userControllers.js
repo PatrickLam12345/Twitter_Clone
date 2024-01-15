@@ -93,7 +93,6 @@ const getFollowers = async (req, res, next) => {
       skip: (currentPage - 1) * itemsPerPage,
       take: itemsPerPage,
     });
-    console.log(followers);
 
     const followersWithUserProfile = [];
 
@@ -119,8 +118,6 @@ const getFollowers = async (req, res, next) => {
       followersWithUserProfile.push(followerWithUserProfile);
     }
 
-    console.log(followersWithUserProfile);
-
     const updatedFollowers = await Promise.all(
       followersWithUserProfile.map(async (follower) => {
         const isFollowing = await prisma.follower.findFirst({
@@ -141,8 +138,6 @@ const getFollowers = async (req, res, next) => {
         return updatedFollower;
       })
     );
-
-    console.log(updatedFollowers);
 
     res.json(updatedFollowers);
   } catch (error) {
@@ -314,7 +309,6 @@ const getMentionsByUser = async (req, res, next) => {
       skip: (currentPage - 1) * itemsPerPage,
     });
 
-    console.log(mentions, "mentions");
     const tweetsWithUser = mentions.map((mention) => ({
       ...mention.tweet,
       user: {
@@ -323,12 +317,10 @@ const getMentionsByUser = async (req, res, next) => {
         s3Key: mention.mentioner.s3Key,
       },
     }));
-    console.log(tweetsWithUser, "tweetswithuser");
     const modifiedUser = {
       ...mentions,
       tweets: tweetsWithUser,
     };
-    console.log("mod", modifiedUser);
     res.status(200).json(modifiedUser);
   } catch (error) {
     console.error("Error fetching user tweets:", error);

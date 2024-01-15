@@ -20,7 +20,6 @@ export default function UserResult({ stopPropagation, user }) {
   };
 
   useEffect(() => {
-    console.log(user);
     if (user.isFollowing) {
       setFollowing(true);
     }
@@ -28,7 +27,6 @@ export default function UserResult({ stopPropagation, user }) {
 
   const [imageSrc, setImageSrc] = useState(null);
   useEffect(() => {
-    console.log(user);
     const getS3Image = async () => {
       try {
         const response = await axios.get(
@@ -43,7 +41,6 @@ export default function UserResult({ stopPropagation, user }) {
             responseType: "arraybuffer",
           }
         );
-        console.log(response);
         const contentType = response.headers["content-type"];
         const blob = new Blob([response.data], { type: contentType });
         const imageUrl = URL.createObjectURL(blob);

@@ -51,7 +51,6 @@ export default function Followers() {
           },
         }
       );
-      console.log(response.data)
       setFollowers(response.data);
       setCurrentPage((prevPage) => prevPage + 1);
     } catch (error) {

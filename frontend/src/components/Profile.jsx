@@ -100,7 +100,6 @@ export default function Profile() {
       );
       setUser(response.data);
       setIsFollowing(response.data.isFollowing);
-      console.log(response.data);
     } catch (error) {
       console.error("Error Fetching:", error);
     }
@@ -120,7 +119,6 @@ export default function Profile() {
           responseType: "arraybuffer",
         }
       );
-      console.log(response);
       const contentType = response.headers["content-type"];
       const blob = new Blob([response.data], { type: contentType });
       const imageUrl = URL.createObjectURL(blob);
@@ -290,7 +288,6 @@ export default function Profile() {
         }
       );
       const tweets = response.data;
-      console.log(response.data);
       setCurrentPage((prevPage) => prevPage + 1);
       setResults(tweets);
     } catch (error) {
@@ -473,7 +470,6 @@ export default function Profile() {
           },
         }
       );
-      console.log(response.data, "mentions");
       setCurrentPage((prevPage) => prevPage + 1);
       setResults(response.data);
     } catch (error) {
