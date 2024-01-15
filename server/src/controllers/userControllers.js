@@ -12,7 +12,7 @@ AWS.config.update({
 const s3 = new AWS.S3();
 
 const getUserProfileByUsername = async (req, res, next) => {
-  const { username } = req.query;
+  const { username, userId } = req.query;
 
   try {
     const userProfile = await prisma.user.findUnique({
@@ -32,7 +32,16 @@ const getUserProfileByUsername = async (req, res, next) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    res.status(200).json(userProfile);
+    const isFollowing = await prisma.follower.findFirst({
+      where: {
+        followerId: Number(userId),
+        followingId: userProfile.id,
+      },
+    });
+
+    const isFollowingValue = !!isFollowing || userProfile.id === Number(userId);
+
+    res.status(200).json({ ...userProfile, isFollowing: isFollowingValue });
   } catch (error) {
     console.error("Error fetching user profile:", error);
     res.status(500).json({ error: "Internal Server Error" });

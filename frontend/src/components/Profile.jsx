@@ -50,6 +50,15 @@ export default function Profile() {
     useState(false);
   const [file, setFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [isFollowHovered, setIsFollowHovered] = useState(false);
+  const handleMouseEnter = () => {
+    setIsFollowHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsFollowHovered(false);
+  };
 
   const handleClearImage = () => {
     setImagePreview(null);
@@ -78,17 +87,20 @@ export default function Profile() {
   const getUserProfile = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getUserProfileByUsername",
+        "http://localhost:3000/api/user/getUserProfileByUsername",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
           },
           params: {
             username,
+            userId: userInfo.id,
           },
         }
       );
       setUser(response.data);
+      setIsFollowing(response.data.isFollowing);
+      console.log(response.data);
     } catch (error) {
       console.error("Error Fetching:", error);
     }
@@ -97,7 +109,7 @@ export default function Profile() {
   const getS3Image = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getS3Media",
+        "http://localhost:3000/api/user/getS3Media",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -118,10 +130,42 @@ export default function Profile() {
     }
   };
 
+  const follow = async () => {
+    const response = await axios.post(
+      "http://localhost:3000/api/user/follow",
+      {
+        followerId: userInfo.id,
+        followingId: user.id,
+      },
+      {
+        headers: {
+          authorization: window.localStorage.getItem("token"),
+        },
+      }
+    );
+    setIsFollowing(true);
+  };
+
+  const unfollow = async () => {
+    const response = await axios.delete(
+      "http://localhost:3000/api/user/unfollow",
+      {
+        data: {
+          followerId: userInfo.id,
+          followingId: user.id,
+        },
+        headers: {
+          authorization: window.localStorage.getItem("token"),
+        },
+      }
+    );
+    setIsFollowing(false);
+  };
+
   const getFollowers = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getFollowerCount",
+        "http://localhost:3000/api/user/getFollowerCount",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -140,7 +184,7 @@ export default function Profile() {
   const getFollowing = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getFollowingCount",
+        "http://localhost:3000/api/user/getFollowingCount",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -234,7 +278,7 @@ export default function Profile() {
   const getTweets = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getTweetsByUser",
+        "http://localhost:3000/api/user/getTweetsByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -257,7 +301,7 @@ export default function Profile() {
   const getMoreTweets = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getTweetsByUser",
+        "http://localhost:3000/api/user/getTweetsByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -282,7 +326,7 @@ export default function Profile() {
   const getReplies = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getRepliesByUser",
+        "http://localhost:3000/api/user/getRepliesByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -303,7 +347,7 @@ export default function Profile() {
   const getMoreReplies = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getRepliesByUser",
+        "http://localhost:3000/api/user/getRepliesByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -328,7 +372,7 @@ export default function Profile() {
   const getRetweets = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getRetweetsByUser",
+        "http://localhost:3000/api/user/getRetweetsByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -349,7 +393,7 @@ export default function Profile() {
   const getMoreRetweets = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getRetweetsByUser",
+        "http://localhost:3000/api/user/getRetweetsByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -373,7 +417,7 @@ export default function Profile() {
   const getLikes = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getLikesByUser",
+        "http://localhost:3000/api/user/getLikesByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -394,7 +438,7 @@ export default function Profile() {
   const getMoreLikes = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getLikesByUser",
+        "http://localhost:3000/api/user/getLikesByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -418,7 +462,7 @@ export default function Profile() {
   const getMentions = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getMentionsByUser",
+        "http://localhost:3000/api/user/getMentionsByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -440,7 +484,7 @@ export default function Profile() {
   const getMoreMentions = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getMentionsByUser",
+        "http://localhost:3000/api/user/getMentionsByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -476,13 +520,13 @@ export default function Profile() {
     const formData = new FormData();
     const descriptionData = JSON.stringify({
       displayName: newDisplayName,
-      id: userInfo.id
+      id: userInfo.id,
     });
     formData.append("file", file);
     formData.append("description", descriptionData);
     try {
       const response = await axios.patch(
-        "https://twitterclonebackend2024.onrender.com/api/user/editUserProfile",
+        "http://localhost:3000/api/user/editUserProfile",
         formData,
         {
           headers: {
@@ -520,10 +564,15 @@ export default function Profile() {
                 <div style={{ display: "flex" }}>
                   <img
                     src={imageSrc}
-                    style={{ height: "150px", maxWidth: "150px", marginRight: "auto", marginBottom: "8px" }}
+                    style={{
+                      height: "150px",
+                      maxWidth: "150px",
+                      marginRight: "auto",
+                      marginBottom: "8px",
+                    }}
                   />
 
-                  {userInfo.username === username && (
+                  {userInfo.username === username ? (
                     <div>
                       <button
                         style={{
@@ -662,6 +711,50 @@ export default function Profile() {
                           </Box>
                         </Fade>
                       </Modal>
+                    </div>
+                  ) : (
+                    <div>
+                      {isFollowing ? (
+                        <button
+                          variant="contained"
+                          color="primary"
+                          onClick={() => unfollow()}
+                          onMouseEnter={handleMouseEnter}
+                          onMouseLeave={handleMouseLeave}
+                          style={{
+                            backgroundColor: "#000000",
+                            color: isFollowHovered ? "red" : "white",
+                            borderRadius: "20px",
+                            padding: "10px 20px",
+                            fontSize: "14px",
+                            border: `1px solid ${isFollowHovered ? "red" : "white"}`,
+                            cursor: "pointer",
+                            fontWeight: "550",
+                            width: "120px",
+                          }}
+                        >
+                          {isFollowHovered ? "Unfollow" : "Following"}
+                        </button>
+                      ) : (
+                        <button
+                          variant="contained"
+                          color="primary"
+                          onClick={() => follow()}
+                          style={{
+                            backgroundColor: "#1d9bf0",
+                            color: "white",
+                            borderRadius: "20px",
+                            padding: "10px 20px",
+                            fontSize: "14px",
+                            border: "none",
+                            cursor: "pointer",
+                            fontWeight: "550",
+                            width: "120px",
+                          }}
+                        >
+                          Follow
+                        </button>
+                      )}
                     </div>
                   )}
                   {userInfo.username === username && (
