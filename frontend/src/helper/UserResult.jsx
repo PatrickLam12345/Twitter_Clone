@@ -30,7 +30,7 @@ export default function UserResult({ stopPropagation, user }) {
     const getS3Image = async () => {
       try {
         const response = await axios.get(
-          "https://twitterclonebackend2024.onrender.com/api/user/getS3Media",
+          "http://localhost:3000/api/user/getS3Media",
           {
             headers: {
               authorization: window.localStorage.getItem("token"),
@@ -57,7 +57,7 @@ export default function UserResult({ stopPropagation, user }) {
   const follow = async (e, followingId) => {
     stopPropagation(e);
     const response = await axios.post(
-      "https://twitterclonebackend2024.onrender.com/api/user/follow",
+      "http://localhost:3000/api/user/follow",
       {
         followerId: userInfo.id,
         followingId,
@@ -74,7 +74,7 @@ export default function UserResult({ stopPropagation, user }) {
   const unfollow = async (e, followingId) => {
     stopPropagation(e);
     const response = await axios.delete(
-      "https://twitterclonebackend2024.onrender.com/api/user/unfollow",
+      "http://localhost:3000/api/user/unfollow",
       {
         data: {
           followerId: userInfo.id,

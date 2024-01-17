@@ -18,7 +18,7 @@ export default function Retweet({ userId, tweetId }) {
     const getRetweetStatus = async () => {
       try {
         const response = await axios.get(
-          `https://twitterclonebackend2024.onrender.com/api/user/hasRetweeted`,
+          `http://localhost:3000/api/user/hasRetweeted`,
           {
             headers: {
               authorization: window.localStorage.getItem("token"),
@@ -44,7 +44,7 @@ export default function Retweet({ userId, tweetId }) {
     const getRetweetCount = async () => {
       try {
         const response = await axios.get(
-          `https://twitterclonebackend2024.onrender.com/api/user/getRetweetCount`,
+          `http://localhost:3000/api/user/getRetweetCount`,
           {
             headers: {
               authorization: window.localStorage.getItem("token"),
@@ -66,7 +66,7 @@ export default function Retweet({ userId, tweetId }) {
   const retweet = async () => {
     try {
       const response = await axios.post(
-        `https://twitterclonebackend2024.onrender.com/api/user/retweet`,
+        `http://localhost:3000/api/user/retweet`,
         {
           userId,
           tweetId,
@@ -89,7 +89,7 @@ export default function Retweet({ userId, tweetId }) {
   const deleteRetweet = async () => {
     try {
       const response = await axios.delete(
-        `https://twitterclonebackend2024.onrender.com/api/user/deleteRetweet`,
+        `http://localhost:3000/api/user/deleteRetweet`,
         {
           data: {
             userId,

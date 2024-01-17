@@ -17,7 +17,7 @@ export default function Root() {
   const [isMobile, setIsMobile] = useState(false);
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
-
+  
   useEffect(() => {
     let scrollingTimer;
 
@@ -66,7 +66,7 @@ export default function Root() {
         style={{
           display: "flex",
           width: "100%",
-          height: "100%"
+          height: "100%",
         }}
       >
         {!isScrolling && (

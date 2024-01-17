@@ -29,7 +29,7 @@ export default function TweetChain() {
     const getS3Image = async () => {
       try {
         const response = await axios.get(
-          "https://twitterclonebackend2024.onrender.com/api/user/getS3Media",
+          "http://localhost:3000/api/user/getS3Media",
           {
             headers: {
               authorization: window.localStorage.getItem("token"),
@@ -44,7 +44,7 @@ export default function TweetChain() {
         const blob = new Blob([response.data], { type: contentType });
         const imageUrl = URL.createObjectURL(blob);
         setImageSrc(imageUrl);
-        setLoadingState(true)
+        setLoadingState(true);
       } catch (error) {
         console.error("Error Fetching:", error);
       }
@@ -107,7 +107,7 @@ export default function TweetChain() {
     const fetchTweet = async () => {
       try {
         const response = await axios.get(
-          "https://twitterclonebackend2024.onrender.com/api/user/getTweetDetails",
+          "http://localhost:3000/api/user/getTweetDetails",
           {
             params: {
               id: tweetId,
@@ -118,6 +118,7 @@ export default function TweetChain() {
           }
         );
         setTweet(response.data);
+        console.log(response.data);
       } catch (error) {
         console.error("Error fetching tweet:", error);
       }
@@ -129,7 +130,7 @@ export default function TweetChain() {
   const fetchReplies = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getTweetReplies",
+        "http://localhost:3000/api/user/getTweetReplies",
         {
           params: {
             id: tweetId,
@@ -150,7 +151,7 @@ export default function TweetChain() {
   const fetchMoreReplies = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getTweetReplies",
+        "http://localhost:3000/api/user/getTweetReplies",
         {
           params: {
             id: tweetId,
@@ -253,6 +254,16 @@ export default function TweetChain() {
                       >
                         {tweet.user.ArrowUpwardIcondisplayName}
                       </span>
+                      <p
+                        style={{
+                          fontWeight: "bold",
+                          margin: "0",
+                          marginLeft: "5px"
+                        }}
+                        onClick={(e) => handleOnClick(e)}
+                      >
+                        {tweet.user.displayName}
+                      </p>
                       <span
                         style={{ color: "gray", marginLeft: "5px" }}
                         onClick={(e) => handleOnClick(e)}

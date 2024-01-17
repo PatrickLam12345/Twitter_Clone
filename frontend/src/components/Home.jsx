@@ -13,6 +13,20 @@ export default function Home() {
   const [startIndex, setStartIndex] = useState(0);
   const [shouldDisplayNoDataMessage, setShouldDisplayNoDataMessage] =
     useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const handleResize = () => {
+      const mobileThreshold = 768;
+      setIsMobile(window.innerWidth < mobileThreshold);
+    };
+
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -25,7 +39,7 @@ export default function Home() {
   const getForYouFeed = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getForYouFeed",
+        "http://localhost:3000/api/user/getForYouFeed",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -45,7 +59,7 @@ export default function Home() {
   const getMoreForYouFeed = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getForYouFeed",
+        "http://localhost:3000/api/user/getForYouFeed",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -65,7 +79,7 @@ export default function Home() {
   const getFollowingFeed = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getFollowingFeed",
+        "http://localhost:3000/api/user/getFollowingFeed",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -86,7 +100,7 @@ export default function Home() {
   const getMoreFollowingFeed = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getFollowingFeed",
+        "http://localhost:3000/api/user/getFollowingFeed",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -201,7 +215,7 @@ export default function Home() {
       {feed && activeTab === "forYou" ? (
         feed?.length > 0 ? (
           <div>
-            <div style={{ height: "52px" }}></div>
+            <div style={{ height: isMobile ? "72px" : "52px" }}></div>
             <div>
               {feed.map((tweet) => (
                 <TweetResult key={tweet.id} tweet={tweet} />
@@ -215,10 +229,10 @@ export default function Home() {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                height: "50px",
+                height: isMobile ? "200px" : "150px",
               }}
             >
-              No posts in the database
+              No posts within last 24 hours...
             </div>
           )
         )
@@ -240,10 +254,10 @@ export default function Home() {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                height: "50px",
+                height: isMobile ? "200px" : "150px",
               }}
             >
-              User follows no one/following has no posts
+              User follows no one/following has no posts...
             </div>
           )
         )
