@@ -23,6 +23,60 @@ export default function TweetChain() {
   const { tweetId } = useParams();
   const [currentPage, setCurrentPage] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [loadingState, setLoadingState] = useState(false);
+  const [imageSrc, setImageSrc] = useState(null);
+  useEffect(() => {
+    const getS3Image = async () => {
+      try {
+        const response = await axios.get(
+          "https://twitterclonebackend2024.onrender.com/api/user/getS3Media",
+          {
+            headers: {
+              authorization: window.localStorage.getItem("token"),
+            },
+            params: {
+              s3Key: tweet.user.s3Key,
+            },
+            responseType: "arraybuffer",
+          }
+        );
+        const contentType = response.headers["content-type"];
+        const blob = new Blob([response.data], { type: contentType });
+        const imageUrl = URL.createObjectURL(blob);
+        setImageSrc(imageUrl);
+        setLoadingState(true)
+      } catch (error) {
+        console.error("Error Fetching:", error);
+      }
+    };
+
+    getS3Image();
+  }, [tweet]);
+
+  const formatTimeDifference = () => {
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - new Date(tweet.date)) / 1000);
+
+    if (diffInSeconds < 60) {
+      return `${diffInSeconds}s`;
+    } else if (diffInSeconds < 3600) {
+      const diffInMinutes = Math.floor(diffInSeconds / 60);
+      return `${diffInMinutes}m`;
+    } else if (diffInSeconds < 86400) {
+      const diffInHours = Math.floor(diffInSeconds / 3600);
+      return `${diffInHours}h`;
+    } else if (diffInSeconds < 432000) {
+      const diffInDays = Math.floor(diffInSeconds / 86400);
+      return `${diffInDays}d ago`;
+    } else {
+      return new Date(tweet.date).toLocaleString();
+    }
+  };
+
+  const handleOnClick = (e) => {
+    stopPropagation(e);
+    navigate(`/${username}`);
+  };
 
   const navigate = useNavigate();
   const formatTime = (timestamp) => {
@@ -149,7 +203,7 @@ export default function TweetChain() {
 
   return (
     <>
-      {tweet ? (
+      {tweet && loadingState ? (
         <div>
           <div
             style={{
@@ -164,7 +218,7 @@ export default function TweetChain() {
                 marginRight: "20px",
               }}
             >
-              <div style={{ display: "inline-block", marginTop: "10px"}}>
+              <div style={{ display: "inline-block", marginTop: "10px" }}>
                 {tweet.originalTweetId ? (
                   <div style={{ display: "flex", alignItems: "center" }}>
                     <ArrowUpwardIcon
@@ -178,13 +232,62 @@ export default function TweetChain() {
                     </p>
                   </div>
                 ) : null}
-                <TweetProfile
-                  displayName={tweet.user.displayName}
-                  username={tweet.user.username}
-                  date={null}
-                  s3Key={tweet.user.s3Key}
-                  stopPropagation={() => {}}
-                />
+                <div style={{ display: "flex", alignItems: "flex-start" }}>
+                  <div style={{ width: "50px", textAlign: "center" }}>
+                    <img
+                      onClick={(e) => handleOnClick(e)}
+                      src={imageSrc}
+                      style={{
+                        height: "50px",
+                        width: "auto",
+                        maxWidth: "50px",
+                      }}
+                      alt="S3 Image"
+                    />
+                  </div>
+                  {tweet.date ? (
+                    <div style={{ marginLeft: "5px" }}>
+                      <span
+                        style={{ fontWeight: "bold" }}
+                        onClick={(e) => handleOnClick(e)}
+                      >
+                        {tweet.user.ArrowUpwardIcondisplayName}
+                      </span>
+                      <span
+                        style={{ color: "gray", marginLeft: "5px" }}
+                        onClick={(e) => handleOnClick(e)}
+                      >
+                        @{tweet.user.username}
+                      </span>
+                      <span style={{ marginLeft: "5px" }}>
+                        - {formatTimeDifference()}
+                      </span>
+                    </div>
+                  ) : (
+                    <div>
+                      <p
+                        style={{
+                          fontWeight: "bold",
+                          margin: "0",
+                          marginLeft: "10px",
+                        }}
+                        onClick={(e) => handleOnClick(e)}
+                      >
+                        {tweet.user.displayName}
+                      </p>
+                      <p
+                        style={{
+                          color: "gray",
+                          margin: "0",
+                          marginLeft: "10px",
+                        }}
+                        onClick={(e) => handleOnClick(e)}
+                      >
+                        @{tweet.user.username}
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
               <TweetText stopPropagation={stopPropagation} text={tweet.text} />
               {tweet.s3Key && (
@@ -234,7 +337,18 @@ export default function TweetChain() {
             </div>
           )}
         </div>
-      ) : null}
+      ) : (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "50px",
+          }}
+        >
+          Loading...
+        </div>
+      )}
     </>
   );
 }

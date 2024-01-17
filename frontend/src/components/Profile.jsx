@@ -52,6 +52,23 @@ export default function Profile() {
   const [imagePreview, setImagePreview] = useState(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const [isFollowHovered, setIsFollowHovered] = useState(false);
+  const [loadingState, setLoadingState] = useState(false);
+  const [loadingTweets, setLoadingTweets] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const handleResize = () => {
+      const mobileThreshold = 768;
+      setIsMobile(window.innerWidth < mobileThreshold);
+    };
+
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   const handleMouseEnter = () => {
     setIsFollowHovered(true);
   };
@@ -77,12 +94,21 @@ export default function Profile() {
   };
 
   useEffect(() => {
+    setLoadingTweets(true);
+    setShouldDisplayNoDataMessage(false);
+
     const timeoutId = setTimeout(() => {
       setShouldDisplayNoDataMessage(true);
     }, 2000);
+    const loadingTimeoutId = setTimeout(() => {
+      setLoadingTweets(false);
+    }, 2000);
 
-    return () => clearTimeout(timeoutId);
-  }, [results, activeTab]);
+    return () => {
+      clearTimeout(timeoutId);
+      clearTimeout(loadingTimeoutId);
+    };
+  }, [activeTab]);
 
   const getUserProfile = async () => {
     if (username && userInfo) {
@@ -125,6 +151,7 @@ export default function Profile() {
       const blob = new Blob([response.data], { type: contentType });
       const imageUrl = URL.createObjectURL(blob);
       setImageSrc(imageUrl);
+      setLoadingState(true);
     } catch (error) {
       console.error("Error Fetching:", error);
     }
@@ -245,6 +272,8 @@ export default function Profile() {
   const handleTabClick = (tab) => {
     if (activeTab !== tab) {
       setActiveTab(tab);
+      setLoadingState(true);
+      setShouldDisplayNoDataMessage(false);
     }
     if (tab == "posts") {
       setCurrentPage(0);
@@ -323,6 +352,7 @@ export default function Profile() {
   };
 
   const getReplies = async () => {
+    setLoadingTweets(true);
     try {
       const response = await axios.get(
         "https://twitterclonebackend2024.onrender.com/api/user/getRepliesByUser",
@@ -338,6 +368,7 @@ export default function Profile() {
       );
       setCurrentPage((prevPage) => prevPage + 1);
       setResults(response.data);
+      setLoadingTweets(false);
     } catch (error) {
       console.error("Error Fetching:", error);
     }
@@ -544,7 +575,7 @@ export default function Profile() {
 
   return (
     <>
-      {user && imageSrc && (
+      {user && imageSrc && loadingState ? (
         <div>
           <div
             style={{
@@ -628,7 +659,7 @@ export default function Profile() {
                                 Edit Display Name
                               </h3>
                               <form
-                                onSubmit={editProfile}
+                                onSubmit={() => {}}
                                 style={{
                                   display: "flex",
                                   flexDirection: "column",
@@ -702,7 +733,7 @@ export default function Profile() {
                                     width: "100px",
                                   }}
                                 >
-                                  Edit Profile
+                                  Edit Profile (Fixing)
                                 </button>
                               </form>
                             </div>
@@ -852,10 +883,11 @@ export default function Profile() {
                 width: "100%",
                 backgroundColor: "#000000",
                 display: "flex",
-                justifyContent: "space-around",
+                justifyContent: isMobile ? "none" : "space-around",
                 cursor: "pointer",
                 padding: "10px",
                 boxSizing: "border-box",
+                overflowX: "auto",
               }}
             >
               <div
@@ -892,13 +924,7 @@ export default function Profile() {
           </div>
           {results && activeTab == "posts" ? (
             results.tweets?.length > 0 ? (
-              <div>
-                {results.tweets.map((tweet) => (
-                  <TweetResult key={tweet.id} tweet={tweet} />
-                ))}
-              </div>
-            ) : (
-              shouldDisplayNoDataMessage && (
+              loadingTweets ? (
                 <div
                   style={{
                     display: "flex",
@@ -907,19 +933,60 @@ export default function Profile() {
                     height: "50px",
                   }}
                 >
-                  User has no posts...
+                  Loading...
+                </div>
+              ) : (
+                <div>
+                  {results.tweets.map((tweet) => (
+                    <TweetResult key={tweet.id} tweet={tweet} />
+                  ))}
                 </div>
               )
+            ) : shouldDisplayNoDataMessage ? (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: "50px",
+                }}
+              >
+                User has no posts...
+              </div>
+            ) : (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: "50px",
+                }}
+              >
+                Loading...
+              </div>
             )
           ) : null}
 
           {results && activeTab == "replies" ? (
             results.tweets?.length > 0 ? (
-              <div>
-                {results.tweets.map((tweet) => (
-                  <TweetResult key={tweet.id} tweet={tweet} />
-                ))}
-              </div>
+              loadingTweets ? (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "50px",
+                  }}
+                >
+                  Loading...
+                </div>
+              ) : (
+                <div>
+                  {results.tweets.map((tweet) => (
+                    <TweetResult key={tweet.id} tweet={tweet} />
+                  ))}
+                </div>
+              )
             ) : (
               shouldDisplayNoDataMessage && (
                 <div
@@ -989,22 +1056,42 @@ export default function Profile() {
                   <TweetResult key={tweet.tweet.id} tweet={tweet.tweet} />
                 ))}
               </div>
+            ) : shouldDisplayNoDataMessage ? (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: "50px",
+                }}
+              >
+                User has not liked anything...
+              </div>
             ) : (
-              shouldDisplayNoDataMessage && (
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: "50px",
-                  }}
-                >
-                  User has not liked anything...
-                </div>
-              )
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: "50px",
+                }}
+              >
+                Loading...
+              </div>
             )
           ) : null}
           <div style={{ height: "200px" }}></div>
+        </div>
+      ) : (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "50px",
+          }}
+        >
+          Loading...
         </div>
       )}
     </>

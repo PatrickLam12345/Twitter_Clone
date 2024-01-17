@@ -14,159 +14,314 @@ export default function Root() {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  // const [imageSrc, setImageSrc] = useState(null);
-  // useEffect(() => {
-  //   const getS3Image = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         "https://twitterclonebackend2024.onrender.com/api/user/getS3Media",
-  //         {
-  //           headers: {
-  //             authorization: window.localStorage.getItem("token"),
-  //           },
-  //           params: {
-  //             s3Key: userInfo.s3Key,
-  //           },
-  //           responseType: "arraybuffer",
-  //         }
-  //       );
-  //       console.log(response);
-  //       const contentType = response.headers["content-type"];
-  //       const blob = new Blob([response.data], { type: contentType });
-  //       const imageUrl = URL.createObjectURL(blob);
-  //       setImageSrc(imageUrl);
-  //       console.log(imageUrl, "root");
-  //       console.log(userInfo, "root")
-  //     } catch (error) {
-  //       console.error("Error Fetching:", error);
-  //     }
-  //   };
+  const [isMobile, setIsMobile] = useState(false);
+  const [sidebarVisible, setSidebarVisible] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
 
-  //   getS3Image();
-  // }, [userInfo]);
+  useEffect(() => {
+    let scrollingTimer;
+
+    const handleScrollStart = () => {
+      setIsScrolling(true);
+
+      // Clear any existing timer
+      clearTimeout(scrollingTimer);
+
+      // Set a timer to detect the end of scrolling
+      scrollingTimer = setTimeout(() => {
+        setIsScrolling(false);
+      }, 200); // Adjust the timeout as needed
+    };
+
+    window.addEventListener("scroll", handleScrollStart);
+    window.addEventListener("wheel", handleScrollStart);
+
+    return () => {
+      window.removeEventListener("scroll", handleScrollStart);
+      window.removeEventListener("wheel", handleScrollStart);
+
+      // Clear the timer on component unmount
+      clearTimeout(scrollingTimer);
+    };
+  }, []);
+
+  const handleToggleSidebar = () => {
+    setSidebarVisible(!sidebarVisible);
+  };
+
+  useEffect(() => {
+    const handleResize = () => {
+      const mobileThreshold = 768;
+      setIsMobile(window.innerWidth < mobileThreshold);
+    };
+
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   return userInfo ? (
-    <div
-      style={{
-        display: "flex",
-        height: "100%",
-        maxWidth: "1100px",
-        marginLeft: "auto",
-        marginRight: "auto",
-      }}
-    >
+    isMobile ? (
       <div
         style={{
-          width: "200px",
-          height: "100%",
-          backgroundColor: "#000000",
-          overflowX: "hidden",
-          paddingTop: "80px",
-          marginTop: "20px",
-          color: "white",
-          overflowY: "hidden",
-          padding: "20px",
-          position: "fixed",
+          display: "flex",
+          width: "100%",
+          height: "100%"
         }}
       >
-        <div>
-          <Link
-            style={{
-              textDecoration: "none",
-              color: "white",
-              display: "flex",
-              alignItems: "center",
-              paddingBottom: "20px",
-            }}
-            to="/home"
-          >
-            <TwitterIcon fontSize="large" />
-          </Link>
-        </div>
-        <div>
-          <Link
-            style={{
-              textDecoration: "none",
-              color: "white",
-              display: "flex",
-              alignItems: "center",
-              paddingBottom: "20px",
-              gap: "15px",
-            }}
-            to="/home"
-          >
-            <HomeIcon fontSize="large" /> Home
-          </Link>
-        </div>
-        <div>
-          <Link
-            style={{
-              textDecoration: "none",
-              color: "white",
-              display: "flex",
-              alignItems: "center",
-              paddingBottom: "20px",
-              gap: "15px",
-              marginLeft: "",
-            }}
-            to="/explore"
-          >
-            <SearchIcon fontSize="large" /> Explore
-          </Link>
-        </div>
-        <div>
-          <Link
-            style={{
-              textDecoration: "none",
-              color: "white",
-              display: "flex",
-              alignItems: "center",
-              paddingBottom: "20px",
-              gap: "15px",
-            }}
-            to={`/${userInfo.username}`}
-          >
-            <PersonOutlineIcon fontSize="large" /> Profile
-          </Link>
-        </div>
-        <div>
+        {!isScrolling && (
           <button
             style={{
               backgroundColor: "#1d9bf0",
               color: "white",
               borderRadius: "50px",
-              padding: "14px 80px",
+              padding: "14px 20px",
               fontSize: "16px",
               border: "none",
               cursor: "pointer",
               fontWeight: "600",
-              font: "10px",
+              position: "fixed",
+              bottom: "20px",
+              right: "20px",
+              zIndex: 1000,
             }}
-            onClick={handleOpen}
+            onClick={handleToggleSidebar}
           >
-            Post
+            {sidebarVisible ? "Hide Sidebar" : "Show Sidebar"}
           </button>
-          <Tweet open={open} handleClose={handleClose} />
+        )}
+        {sidebarVisible && (
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              backgroundColor: "#000000",
+              overflowX: "hidden",
+              paddingTop: "80px",
+              color: "white",
+              overflowY: "hidden",
+              padding: "20px",
+              top: 0,
+              left: 0,
+              position: "fixed",
+              zIndex: 999,
+            }}
+          >
+            <div>
+              <Link
+                style={{
+                  textDecoration: "none",
+                  color: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  paddingBottom: "20px",
+                }}
+                to="/home"
+                onClick={handleToggleSidebar}
+              >
+                <TwitterIcon fontSize="large" />
+              </Link>
+            </div>
+            <div>
+              <Link
+                style={{
+                  textDecoration: "none",
+                  color: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  paddingBottom: "20px",
+                  gap: "15px",
+                }}
+                onClick={handleToggleSidebar}
+                to="/home"
+              >
+                <HomeIcon fontSize="large" /> Home
+              </Link>
+            </div>
+            <div>
+              <Link
+                style={{
+                  textDecoration: "none",
+                  color: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  paddingBottom: "20px",
+                  gap: "15px",
+                  marginLeft: "",
+                }}
+                onClick={handleToggleSidebar}
+                to="/explore"
+              >
+                <SearchIcon fontSize="large" /> Explore
+              </Link>
+            </div>
+            <div>
+              <Link
+                style={{
+                  textDecoration: "none",
+                  color: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  paddingBottom: "20px",
+                  gap: "15px",
+                }}
+                onClick={handleToggleSidebar}
+                to={`/${userInfo.username}`}
+              >
+                <PersonOutlineIcon fontSize="large" /> Profile
+              </Link>
+            </div>
+            <div>
+              <button
+                style={{
+                  backgroundColor: "#1d9bf0",
+                  color: "white",
+                  borderRadius: "50px",
+                  padding: "14px 80px",
+                  fontSize: "16px",
+                  border: "none",
+                  cursor: "pointer",
+                  fontWeight: "600",
+                  font: "10px",
+                }}
+                onClick={handleOpen}
+              >
+                Post
+              </button>
+              <Tweet open={open} handleClose={handleClose} />
+            </div>
+          </div>
+        )}
+        <div
+          style={{
+            flex: 1,
+            height: "100%",
+            overflowX: "hidden",
+          }}
+        >
+          <Outlet />
         </div>
-        {/* <img
-          onClick={(e) => handleOnClick(e)}
-          src={imageSrc}
-          style={{ height: "50px", width: "auto" }}
-          alt="S3 Image"
-        /> */}
       </div>
+    ) : (
       <div
         style={{
-          flex: 1,
+          display: "flex",
           height: "100%",
-          overflowX: "hidden",
-          marginLeft: "240px",
-          padding: "20px",
+          maxWidth: "1100px",
+          marginLeft: "auto",
+          marginRight: "auto",
         }}
       >
-        <Outlet />
+        <div
+          style={{
+            width: "200px",
+            height: "100%",
+            backgroundColor: "#000000",
+            overflowX: "hidden",
+            paddingTop: "80px",
+            marginTop: "20px",
+            color: "white",
+            overflowY: "hidden",
+            padding: "20px",
+            position: "fixed",
+          }}
+        >
+          <div>
+            <Link
+              style={{
+                textDecoration: "none",
+                color: "white",
+                display: "flex",
+                alignItems: "center",
+                paddingBottom: "20px",
+              }}
+              to="/home"
+            >
+              <TwitterIcon fontSize="large" />
+            </Link>
+          </div>
+          <div>
+            <Link
+              style={{
+                textDecoration: "none",
+                color: "white",
+                display: "flex",
+                alignItems: "center",
+                paddingBottom: "20px",
+                gap: "15px",
+              }}
+              to="/home"
+            >
+              <HomeIcon fontSize="large" /> Home
+            </Link>
+          </div>
+          <div>
+            <Link
+              style={{
+                textDecoration: "none",
+                color: "white",
+                display: "flex",
+                alignItems: "center",
+                paddingBottom: "20px",
+                gap: "15px",
+                marginLeft: "",
+              }}
+              to="/explore"
+            >
+              <SearchIcon fontSize="large" /> Explore
+            </Link>
+          </div>
+          <div>
+            <Link
+              style={{
+                textDecoration: "none",
+                color: "white",
+                display: "flex",
+                alignItems: "center",
+                paddingBottom: "20px",
+                gap: "15px",
+              }}
+              to={`/${userInfo.username}`}
+            >
+              <PersonOutlineIcon fontSize="large" /> Profile
+            </Link>
+          </div>
+          <div>
+            <button
+              style={{
+                backgroundColor: "#1d9bf0",
+                color: "white",
+                borderRadius: "50px",
+                padding: "14px 80px",
+                fontSize: "16px",
+                border: "none",
+                cursor: "pointer",
+                fontWeight: "600",
+                font: "10px",
+              }}
+              onClick={handleOpen}
+            >
+              Post
+            </button>
+            <Tweet open={open} handleClose={handleClose} />
+          </div>
+        </div>
+        <div
+          style={{
+            flex: 1,
+            height: "100%",
+            overflowX: "hidden",
+            marginLeft: "240px",
+            padding: "20px",
+          }}
+        >
+          <Outlet />
+        </div>
       </div>
-    </div>
+    )
   ) : (
     <Outlet />
   );

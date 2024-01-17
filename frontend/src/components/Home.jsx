@@ -181,7 +181,6 @@ export default function Home() {
           border: "1px solid #333",
           position: "fixed",
           top: 0,
-          zIndex: 1000,
           paddingTop: "20px",
           paddingBottom: "20px",
         }}
