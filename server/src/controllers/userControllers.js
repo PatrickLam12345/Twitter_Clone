@@ -967,6 +967,7 @@ const getForYouFeed = async (req, res, next) => {
 
     const mostLikedTweets = await prisma.tweet.findMany({
       where: {
+        isPost: true,
         date: {
           gte: twentyFourHoursAgo,
         },
