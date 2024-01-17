@@ -232,7 +232,8 @@ export default function Home() {
                 height: isMobile ? "200px" : "150px",
               }}
             >
-              No posts within last 24 hours... Be the first to tweet! (Go to explore and type user to find test users)
+              No posts within last 24 hours... Be the first to tweet! (Go to
+              explore and type user to find test users)
             </div>
           )
         )
@@ -240,7 +241,7 @@ export default function Home() {
       {feed && activeTab == "following" ? (
         feed.length > 0 ? (
           <div>
-            <div style={{ height: "52px" }}></div>
+            <div style={{ height: isMobile ? "72px" : "52px" }}></div>
             <div>
               {feed.map((tweet) => (
                 <TweetResult key={tweet.id} tweet={tweet} />
