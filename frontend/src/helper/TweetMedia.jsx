@@ -7,7 +7,7 @@ export default function TweetMedia({ stopPropagation, s3Key }) {
     const getS3Image = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:3000/api/user/getS3Media",
+          "https://twitterclone2024.onrender.com/api/user/getS3Media",
           {
             headers: {
               authorization: window.localStorage.getItem("token"),

@@ -39,7 +39,7 @@ export default function Home() {
   const getForYouFeed = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getForYouFeed",
+        "https://twitterclone2024.onrender.com/api/user/getForYouFeed",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -59,7 +59,7 @@ export default function Home() {
   const getMoreForYouFeed = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getForYouFeed",
+        "https://twitterclone2024.onrender.com/api/user/getForYouFeed",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -79,7 +79,7 @@ export default function Home() {
   const getFollowingFeed = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getFollowingFeed",
+        "https://twitterclone2024.onrender.com/api/user/getFollowingFeed",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -100,7 +100,7 @@ export default function Home() {
   const getMoreFollowingFeed = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getFollowingFeed",
+        "https://twitterclone2024.onrender.com/api/user/getFollowingFeed",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -213,7 +213,7 @@ export default function Home() {
         </div>
       </nav>
       {feed && activeTab === "forYou" ? (
-        feed?.length > 0 ? (
+        feed?.length > 100 ? (
           <div>
             <div style={{ height: isMobile ? "72px" : "52px" }}></div>
             <div>
@@ -232,7 +232,7 @@ export default function Home() {
                 height: isMobile ? "200px" : "150px",
               }}
             >
-              No posts within last 24 hours...
+              No posts within last 24 hours... Be the first to tweet! (Go to explore and type test to find test users)
             </div>
           )
         )
