@@ -213,7 +213,7 @@ export default function Home() {
         </div>
       </nav>
       {feed && activeTab === "forYou" ? (
-        feed?.length > 100 ? (
+        feed?.length > 0 ? (
           <div>
             <div style={{ height: isMobile ? "72px" : "52px" }}></div>
             <div>
