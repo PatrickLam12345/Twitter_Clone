@@ -114,7 +114,7 @@ export default function Profile() {
     if (username && userInfo) {
       try {
         const response = await axios.get(
-          "https://twitterclonebackend2024.onrender.com/api/user/getUserProfileAndIsFollowingByUsername",
+          "http://localhost:3000/api/user/getUserProfileAndIsFollowingByUsername",
           {
             headers: {
               authorization: window.localStorage.getItem("token"),
@@ -136,7 +136,7 @@ export default function Profile() {
   const getS3Image = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getS3Media",
+        "http://localhost:3000/api/user/getS3Media",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -159,7 +159,7 @@ export default function Profile() {
 
   const follow = async () => {
     const response = await axios.post(
-      "https://twitterclonebackend2024.onrender.com/api/user/follow",
+      "http://localhost:3000/api/user/follow",
       {
         followerId: userInfo.id,
         followingId: user.id,
@@ -175,7 +175,7 @@ export default function Profile() {
 
   const unfollow = async () => {
     const response = await axios.delete(
-      "https://twitterclonebackend2024.onrender.com/api/user/unfollow",
+      "http://localhost:3000/api/user/unfollow",
       {
         data: {
           followerId: userInfo.id,
@@ -192,7 +192,7 @@ export default function Profile() {
   const getFollowers = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getFollowerCount",
+        "http://localhost:3000/api/user/getFollowerCount",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -211,7 +211,7 @@ export default function Profile() {
   const getFollowing = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getFollowingCount",
+        "http://localhost:3000/api/user/getFollowingCount",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -307,7 +307,7 @@ export default function Profile() {
   const getTweets = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getTweetsByUser",
+        "http://localhost:3000/api/user/getTweetsByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -329,7 +329,7 @@ export default function Profile() {
   const getMoreTweets = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getTweetsByUser",
+        "http://localhost:3000/api/user/getTweetsByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -355,7 +355,7 @@ export default function Profile() {
     setLoadingTweets(true);
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getRepliesByUser",
+        "http://localhost:3000/api/user/getRepliesByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -377,7 +377,7 @@ export default function Profile() {
   const getMoreReplies = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getRepliesByUser",
+        "http://localhost:3000/api/user/getRepliesByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -402,7 +402,7 @@ export default function Profile() {
   const getRetweets = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getRetweetsByUser",
+        "http://localhost:3000/api/user/getRetweetsByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -423,7 +423,7 @@ export default function Profile() {
   const getMoreRetweets = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getRetweetsByUser",
+        "http://localhost:3000/api/user/getRetweetsByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -447,7 +447,7 @@ export default function Profile() {
   const getLikes = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getLikesByUser",
+        "http://localhost:3000/api/user/getLikesByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -468,7 +468,7 @@ export default function Profile() {
   const getMoreLikes = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getLikesByUser",
+        "http://localhost:3000/api/user/getLikesByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -492,7 +492,7 @@ export default function Profile() {
   const getMentions = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getMentionsByUser",
+        "http://localhost:3000/api/user/getMentionsByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -513,7 +513,7 @@ export default function Profile() {
   const getMoreMentions = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getMentionsByUser",
+        "http://localhost:3000/api/user/getMentionsByUser",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -555,7 +555,7 @@ export default function Profile() {
     formData.append("description", descriptionData);
     try {
       const response = await axios.patch(
-        "https://twitterclonebackend2024.onrender.com/api/user/editUserProfile",
+        "http://localhost:3000/api/user/editUserProfile",
         formData,
         {
           headers: {
@@ -722,7 +722,7 @@ export default function Profile() {
                                   </IconButton>
                                 </div>
                                 <button
-                                  onClick={editProfile}
+                                  onClick={() => {}}
                                   style={{
                                     padding: "8px",
                                     border: "1px solid #1d9bf0",

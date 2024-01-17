@@ -14,7 +14,7 @@ export default function Followers() {
   const getUserProfile = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getUserProfileByUsername",
+        "http://localhost:3000/api/user/getUserProfileByUsername",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -40,7 +40,7 @@ export default function Followers() {
 
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getFollowers",
+        "http://localhost:3000/api/user/getFollowers",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -61,7 +61,7 @@ export default function Followers() {
   const getMoreFollowers = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getFollowers",
+        "http://localhost:3000/api/user/getFollowers",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
