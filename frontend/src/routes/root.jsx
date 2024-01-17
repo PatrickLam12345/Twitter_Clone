@@ -24,13 +24,11 @@ export default function Root() {
     const handleScrollStart = () => {
       setIsScrolling(true);
 
-      // Clear any existing timer
       clearTimeout(scrollingTimer);
 
-      // Set a timer to detect the end of scrolling
       scrollingTimer = setTimeout(() => {
         setIsScrolling(false);
-      }, 200); // Adjust the timeout as needed
+      }, 200);
     };
 
     window.addEventListener("scroll", handleScrollStart);
@@ -40,7 +38,6 @@ export default function Root() {
       window.removeEventListener("scroll", handleScrollStart);
       window.removeEventListener("wheel", handleScrollStart);
 
-      // Clear the timer on component unmount
       clearTimeout(scrollingTimer);
     };
   }, []);

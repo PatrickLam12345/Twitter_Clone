@@ -29,7 +29,7 @@ export default function TweetChain() {
     const getS3Image = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:3000/api/user/getS3Media",
+          "https://twitterclonebackend2024.onrender.com/api/user/getS3Media",
           {
             headers: {
               authorization: window.localStorage.getItem("token"),
@@ -107,7 +107,7 @@ export default function TweetChain() {
     const fetchTweet = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:3000/api/user/getTweetDetails",
+          "https://twitterclonebackend2024.onrender.com/api/user/getTweetDetails",
           {
             params: {
               id: tweetId,
@@ -129,7 +129,7 @@ export default function TweetChain() {
   const fetchReplies = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getTweetReplies",
+        "https://twitterclonebackend2024.onrender.com/api/user/getTweetReplies",
         {
           params: {
             id: tweetId,
@@ -150,7 +150,7 @@ export default function TweetChain() {
   const fetchMoreReplies = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getTweetReplies",
+        "https://twitterclonebackend2024.onrender.com/api/user/getTweetReplies",
         {
           params: {
             id: tweetId,
