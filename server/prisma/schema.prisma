@@ -30,6 +30,8 @@ model Follower {
   followingUser User     @relation(fields: [followingId], references: [id])
 
   @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
 }
 
 model Tweet {
@@ -44,6 +46,8 @@ model Tweet {
   likes           Like[]
   retweets        Retweet[]
   mentions        Mention[]
+
+  @@index([userId])
 }
 
 model Mention {
@@ -54,6 +58,8 @@ model Mention {
   date            DateTime @default(now())
   tweet           Tweet    @relation(fields: [tweetId], references: [id])
   mentioner       User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }
 
 model Retweet {
@@ -65,6 +71,7 @@ model Retweet {
   originalTweet Tweet    @relation(fields: [tweetId], references: [id])
 
   @@unique([userId, tweetId])
+  @@index([userId])
 }
 
 model Like {
@@ -76,4 +83,5 @@ model Like {
   tweet   Tweet    @relation(fields: [tweetId], references: [id])
 
   @@unique([userId, tweetId])
+  @@index([userId])
 }

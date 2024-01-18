@@ -99,10 +99,10 @@ export default function Profile() {
 
     const timeoutId = setTimeout(() => {
       setShouldDisplayNoDataMessage(true);
-    }, 2000);
+    }, 0);
     const loadingTimeoutId = setTimeout(() => {
       setLoadingTweets(false);
-    }, 2000);
+    }, 0);
 
     return () => {
       clearTimeout(timeoutId);
@@ -659,7 +659,7 @@ export default function Profile() {
                                 Edit Display Name
                               </h3>
                               <form
-                                onSubmit={() => {}}
+                                onSubmit={(e) => {e.preventDefault()}}
                                 style={{
                                   display: "flex",
                                   flexDirection: "column",
@@ -722,7 +722,7 @@ export default function Profile() {
                                   </IconButton>
                                 </div>
                                 <button
-                                  onClick={() => {}}
+                                  onClick={editProfile}
                                   style={{
                                     padding: "8px",
                                     border: "1px solid #1d9bf0",

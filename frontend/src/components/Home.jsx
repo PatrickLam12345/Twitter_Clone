@@ -31,7 +31,7 @@ export default function Home() {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       setShouldDisplayNoDataMessage(true);
-    }, 1000);
+    }, 0);
 
     return () => clearTimeout(timeoutId);
   }, [feed, activeTab]);

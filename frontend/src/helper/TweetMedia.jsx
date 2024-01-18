@@ -30,16 +30,15 @@ export default function TweetMedia({ stopPropagation, s3Key }) {
     getS3Image();
   }, []);
 
-  return (
-    imageSrc ? (
-      <div
+  return imageSrc ? (
+    <div style={{ width: "100%" }}>
+      <img
+        src={imageSrc}
         onClick={(e) => {
           stopPropagation(e);
         }}
-        style={{ width: "100%" }}
-      >
-        <img src={imageSrc} style={{ maxHeight: "175px" }} />
-      </div>
-    ) : null
-  );
+        style={{ maxHeight: "175px" }}
+      />
+    </div>
+  ) : null;
 }

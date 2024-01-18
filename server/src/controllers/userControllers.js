@@ -222,7 +222,7 @@ const getFollowing = async (req, res, next) => {
 
 const getTweetsByUser = async (req, res, next) => {
   const { userId, currentPage } = req.query;
-  const itemsPerPage = 4;
+  const itemsPerPage = 8
   try {
     const user = await prisma.user.findUnique({
       where: {
