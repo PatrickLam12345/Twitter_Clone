@@ -14,11 +14,46 @@ export default function TweetResult({ tweet }) {
   const userInfo = useSelector(selectUserInfo);
   const [loadingState, setLoadingState] = useState(false);
   const [imageSrc, setImageSrc] = useState(null);
+  const [tweetMediaSrc, setTweetMediaSrc] = useState(null);
+  const [mediaLoadingState, setMediaLoadingState] = useState(null);
+
+  useEffect(() => {
+    const getS3TweetMedia = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/api/user/getS3Media",
+          {
+            headers: {
+              authorization: window.localStorage.getItem("token"),
+            },
+            params: {
+              s3Key: tweet.s3Key,
+            },
+            responseType: "arraybuffer",
+          }
+        );
+        const contentType = response.headers["content-type"];
+        const blob = new Blob([response.data], { type: contentType });
+        const imageUrl = URL.createObjectURL(blob);
+        setTweetMediaSrc(imageUrl);
+        setMediaLoadingState(true);
+      } catch (error) {
+        console.error("Error Fetching:", error);
+      }
+    };
+
+    if (tweet?.s3Key) {
+      getS3TweetMedia();
+    } else {
+      setMediaLoadingState(true);
+    }
+  }, [tweet?.s3Key]);
+
   useEffect(() => {
     const getS3Image = async () => {
       try {
         const response = await axios.get(
-          "https://twitterclonebackend2024.onrender.com/api/user/getS3Media",
+          "http://localhost:3000/api/user/getS3Media",
           {
             headers: {
               authorization: window.localStorage.getItem("token"),
@@ -77,7 +112,8 @@ export default function TweetResult({ tweet }) {
   };
 
   return (
-    loadingState && (
+    loadingState &&
+    mediaLoadingState && (
       <div
         style={{
           boxSizing: "border-box",
@@ -143,10 +179,13 @@ export default function TweetResult({ tweet }) {
             </div>
             <TweetText stopPropagation={stopPropagation} text={tweet.text} />
             {tweet.s3Key && (
-              <TweetMedia
-                stopPropagation={stopPropagation}
-                s3Key={tweet.s3Key}
-              />
+              <div style={{ width: "100%" }}>
+                <img
+                  src={tweetMediaSrc}
+                  onClick={(e) => handleOnClick(e)}
+                  style={{ maxHeight: "175px" }}
+                />
+              </div>
             )}
           </div>
         </div>
