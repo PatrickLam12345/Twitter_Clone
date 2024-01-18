@@ -32,7 +32,7 @@ export default function Reply({ userId, tweetId }) {
     const getReplyCount = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/api/user/getReplyCount`,
+          `https://twitterclonebackend2024.onrender.com/api/user/getReplyCount`,
           {
             headers: {
               authorization: window.localStorage.getItem("token"),
