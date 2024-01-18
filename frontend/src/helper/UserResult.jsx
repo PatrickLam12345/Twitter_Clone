@@ -106,7 +106,7 @@ export default function UserResult({ stopPropagation, user }) {
           padding: "10px",
         }}
       >
-        <img src={imageSrc} style={{ maxHeight: "175px" }} />
+        <img src={imageSrc} style={{ maxHeight: "50px" }} />
         <div style={{ marginLeft: "20px" }}>
           <p style={{ fontWeight: "bold", margin: "4px", marginBottom: "10px"}}>{user.displayName}</p>
           <p style={{ color: "gray", margin: "4px", marginTop: "10px"}}> @{user.username}</p>
