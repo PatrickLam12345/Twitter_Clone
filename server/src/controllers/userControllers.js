@@ -222,7 +222,7 @@ const getFollowing = async (req, res, next) => {
 
 const getTweetsByUser = async (req, res, next) => {
   const { userId, currentPage } = req.query;
-  const itemsPerPage = 8
+  const itemsPerPage = 8;
   try {
     const user = await prisma.user.findUnique({
       where: {
@@ -261,7 +261,6 @@ const getTweetsByUser = async (req, res, next) => {
       ...user,
       tweets: tweetsWithUser,
     };
-
     res.status(200).json(modifiedUser);
   } catch (error) {
     console.error("Error fetching user tweets:", error);
@@ -271,7 +270,7 @@ const getTweetsByUser = async (req, res, next) => {
 
 const getRetweetsByUser = async (req, res, next) => {
   const { userId, currentPage } = req.query;
-  const itemsPerPage = 4;
+  const itemsPerPage = 8;
   try {
     const user = await prisma.user.findUnique({
       where: {
@@ -286,7 +285,27 @@ const getRetweetsByUser = async (req, res, next) => {
         s3Key: true,
         retweets: {
           select: {
-            originalTweet: true,
+            id: true,
+            originalTweet: {
+              select: {
+                id: true,
+                userId: true,
+                text: true,
+                s3Key: true,
+                originalTweetId: true,
+                isPost: true,
+                date: true,
+                user: {
+                  select: {
+                    username: true,
+                    displayName: true,
+                    registrationDate: true,
+                    s3Key: true,
+                    id: true,
+                  },
+                },
+              },
+            },
           },
           orderBy: {
             date: "desc",
@@ -296,22 +315,9 @@ const getRetweetsByUser = async (req, res, next) => {
         },
       },
     });
+    console.log(user.retweets[0].originalTweet, "pre");
 
-    const tweetsWithUser = user.retweets.map((retweet) => ({
-      ...retweet.originalTweet,
-      user: {
-        username: user.username,
-        displayName: user.displayName,
-        s3Key: user.s3Key,
-      },
-    }));
-
-    const modifiedUser = {
-      ...user,
-      tweets: tweetsWithUser,
-    };
-
-    res.status(200).json(modifiedUser);
+    res.status(200).json(user);
   } catch (error) {
     console.error("Error fetching user tweets:", error);
     res.status(500).json({ error: "Internal Server Error" });

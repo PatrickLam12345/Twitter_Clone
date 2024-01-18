@@ -55,6 +55,7 @@ export default function Profile() {
   const [loadingState, setLoadingState] = useState(false);
   const [loadingTweets, setLoadingTweets] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [reloadOnEditProfile, setReloadOnEditProfile] = useState(false);
   useEffect(() => {
     const handleResize = () => {
       const mobileThreshold = 768;
@@ -414,7 +415,7 @@ export default function Profile() {
         }
       );
       setCurrentPage((prevPage) => prevPage + 1);
-      setResults(response.data);
+      setResults(response.data.retweets);
     } catch (error) {
       console.error("Error Fetching:", error);
     }
@@ -437,7 +438,7 @@ export default function Profile() {
       setCurrentPage((prevPage) => prevPage + 1);
       setResults((prevResults) => ({
         ...prevResults,
-        tweets: [...prevResults.tweets, ...response.data.tweets],
+        ...response.data.retweets,
       }));
     } catch (error) {
       console.error("Error Fetching:", error);
@@ -545,6 +546,8 @@ export default function Profile() {
     setOpen(false);
   };
 
+  useEffect(() => {}, [reloadOnEditProfile]);
+
   const editProfile = async () => {
     const formData = new FormData();
     const descriptionData = JSON.stringify({
@@ -567,6 +570,7 @@ export default function Profile() {
         setImagePreview(null);
         setFile(null);
         setNewDisplayName("");
+        setReloadOnEditProfile(!reloadOnEditProfile);
       }
     } catch (error) {
       console.error("Error Updating Profile:", error);
@@ -659,7 +663,7 @@ export default function Profile() {
                                 Edit Display Name
                               </h3>
                               <form
-                                onSubmit={(e) => {e.preventDefault()}}
+                                onSubmit={{}}
                                 style={{
                                   display: "flex",
                                   flexDirection: "column",
@@ -733,7 +737,7 @@ export default function Profile() {
                                     width: "100px",
                                   }}
                                 >
-                                  Edit Profile (Fixing)
+                                  Edit Profile
                                 </button>
                               </form>
                             </div>
@@ -1027,10 +1031,10 @@ export default function Profile() {
           ) : null}
 
           {results && activeTab == "retweets" ? (
-            results.tweets?.length > 0 ? (
+            results?.length > 0 ? (
               <div>
-                {results.tweets.map((tweet) => (
-                  <TweetResult key={tweet.id} tweet={tweet} />
+                {results.map((tweet) => (
+                  <TweetResult key={tweet.id} tweet={tweet.originalTweet} />
                 ))}
               </div>
             ) : (
