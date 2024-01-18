@@ -99,7 +99,7 @@ export default function TweetResult({ tweet }) {
 
   const handleOnClick = (e) => {
     stopPropagation(e);
-    navigate(`/${username}`);
+    navigate(`/${tweet.user.username}`);
   };
 
   const navigate = useNavigate();

@@ -15,8 +15,9 @@ export default function UserResult({ stopPropagation, user }) {
   };
 
   const navigate = useNavigate();
-  const navProfile = (username) => {
-    navigate(`/${username}`);
+  const navProfile = (e) => {
+    stopPropagation(e)
+    navigate(`/${user.username}`);
   };
 
   useEffect(() => {
@@ -95,9 +96,6 @@ export default function UserResult({ stopPropagation, user }) {
         border: "1px solid #333",
         borderTop: "none",
       }}
-      onClick={() => {
-        navProfile(user.username);
-      }}
     >
       <div
         style={{
@@ -105,11 +103,21 @@ export default function UserResult({ stopPropagation, user }) {
           alignItems: "center",
           padding: "10px",
         }}
+        onClick={(e) => {
+          navProfile(e);
+        }}
       >
         <img src={imageSrc} style={{ maxHeight: "50px" }} />
         <div style={{ marginLeft: "20px" }}>
-          <p style={{ fontWeight: "bold", margin: "4px", marginBottom: "10px"}}>{user.displayName}</p>
-          <p style={{ color: "gray", margin: "4px", marginTop: "10px"}}> @{user.username}</p>
+          <p
+            style={{ fontWeight: "bold", margin: "4px", marginBottom: "10px" }}
+          >
+            {user.displayName}
+          </p>
+          <p style={{ color: "gray", margin: "4px", marginTop: "10px" }}>
+            {" "}
+            @{user.username}
+          </p>
         </div>
         {userInfo.id === user.id ? null : (
           <div style={{ marginLeft: "auto" }}>
