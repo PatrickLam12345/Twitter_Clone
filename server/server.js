@@ -13,9 +13,13 @@ app.use("/api/auth", authRoutes);
 const userRoutes = require("./src/routes/userRoutes");
 app.use("/api/user", userRoutes);
 
+app.get("/ping", (req, res) => {
+  console.log("ping successful");
+});
+
 app.listen(process.env.PORT, () => {
   console.log(`Listening on port ${process.env.PORT}...`);
   setInterval(() => {
-    axios.get("https://twitterclonebackend2024.onrender.com/");
+    axios.get("https://twitterclonebackend2024.onrender.com/ping");
   }, 60 * 1000);
 });
