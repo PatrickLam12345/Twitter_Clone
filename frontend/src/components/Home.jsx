@@ -11,6 +11,7 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(0);
   const [activeTab, setActiveTab] = useState("forYou");
   const [startIndex, setStartIndex] = useState(0);
+  const [forYouFeedAllTime, setForYouFeedAllTime] = useState(false);
   const [shouldDisplayNoDataMessage, setShouldDisplayNoDataMessage] =
     useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -39,7 +40,7 @@ export default function Home() {
   const getForYouFeed = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getForYouFeed",
+        "http://localhost:3000/api/user/getForYouFeed",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -49,8 +50,25 @@ export default function Home() {
           },
         }
       );
-      setFeed(response.data.tweets);
-      setCurrentPage((prevPage) => prevPage + 1);
+      if (response.data.tweets.length > 0) {
+        setFeed(response.data.tweets);
+        setCurrentPage((prevPage) => prevPage + 1);
+      } else {
+        const response = await axios.get(
+          "http://localhost:3000/api/user/getForYouFeedAllTime",
+          {
+            headers: {
+              authorization: window.localStorage.getItem("token"),
+            },
+            params: {
+              currentPage: 1,
+            },
+          }
+        );
+        setFeed(response.data.tweets);
+        setCurrentPage((prevPage) => prevPage + 1);
+        setForYouFeedAllTime(true);
+      }
     } catch (error) {
       console.error("Error Fetching:", error);
     }
@@ -58,19 +76,35 @@ export default function Home() {
 
   const getMoreForYouFeed = async () => {
     try {
-      const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getForYouFeed",
-        {
-          headers: {
-            authorization: window.localStorage.getItem("token"),
-          },
-          params: {
-            currentPage: currentPage + 1,
-          },
-        }
-      );
-      setFeed((prevFeed) => [...prevFeed, ...response.data.tweets]);
-      setCurrentPage((prevPage) => prevPage + 1);
+      if (forYouFeedAllTime) {
+        const response = await axios.get(
+          "http://localhost:3000/api/user/getForYouFeedAllTime",
+          {
+            headers: {
+              authorization: window.localStorage.getItem("token"),
+            },
+            params: {
+              currentPage: currentPage + 1,
+            },
+          }
+        );
+        setFeed((prevFeed) => [...prevFeed, ...response.data.tweets]);
+        setCurrentPage((prevPage) => prevPage + 1);
+      } else {
+        const response = await axios.get(
+          "http://localhost:3000/api/user/getForYouFeed",
+          {
+            headers: {
+              authorization: window.localStorage.getItem("token"),
+            },
+            params: {
+              currentPage: currentPage + 1,
+            },
+          }
+        );
+        setFeed((prevFeed) => [...prevFeed, ...response.data.tweets]);
+        setCurrentPage((prevPage) => prevPage + 1);
+      }
     } catch (error) {
       console.error("Error Fetching:", error);
     }
@@ -79,7 +113,7 @@ export default function Home() {
   const getFollowingFeed = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getFollowingFeed",
+        "http://localhost:3000/api/user/getFollowingFeed",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -100,7 +134,7 @@ export default function Home() {
   const getMoreFollowingFeed = async () => {
     try {
       const response = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/user/getFollowingFeed",
+        "http://localhost:3000/api/user/getFollowingFeed",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),

@@ -110,7 +110,7 @@ export default function Login() {
   const loginUser = async (formLogin) => {
     try {
       const response = await axios.post(
-        "https://twitterclonebackend2024.onrender.com/api/auth/login",
+        "http://localhost:3000/api/auth/login",
         formLogin
       );
 
@@ -119,7 +119,7 @@ export default function Login() {
       window.localStorage.setItem("token", token);
 
       const userInfoResponse = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/auth/getUserInfo",
+        "http://localhost:3000/api/auth/getUserInfo",
         {
           headers: {
             authorization: token,
@@ -136,7 +136,7 @@ export default function Login() {
   const handleTestLogin = async () => {
     try {
       const response = await axios.post(
-        "https://twitterclonebackend2024.onrender.com/api/auth/login",
+        "http://localhost:3000/api/auth/login",
         {
           email: "testUsertestUsertestUser",
           password: "testUsertestUsertestUser",
@@ -148,7 +148,7 @@ export default function Login() {
       window.localStorage.setItem("token", token);
 
       const userInfoResponse = await axios.get(
-        "https://twitterclonebackend2024.onrender.com/api/auth/getUserInfo",
+        "http://localhost:3000/api/auth/getUserInfo",
         {
           headers: {
             authorization: token,
@@ -165,7 +165,7 @@ export default function Login() {
   const registerUser = async (formRegister) => {
     try {
       const response = await axios.post(
-        "https://twitterclonebackend2024.onrender.com/api/auth/register",
+        "http://localhost:3000/api/auth/register",
         formRegister
       );
       handleCloseRegister();

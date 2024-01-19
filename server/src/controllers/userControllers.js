@@ -315,7 +315,6 @@ const getRetweetsByUser = async (req, res, next) => {
         },
       },
     });
-    console.log(user.retweets[0].originalTweet, "pre");
 
     res.status(200).json(user);
   } catch (error) {
@@ -1004,6 +1003,41 @@ const getForYouFeed = async (req, res, next) => {
   }
 };
 
+const getForYouFeedAllTime = async (req, res, next) => {
+  const { currentPage } = req.query;
+  const itemsPerPage = 8;
+  try {
+
+    const mostLikedTweets = await prisma.tweet.findMany({
+      where: {
+        isPost: true,
+      },
+      orderBy: {
+        likes: {
+          _count: "desc",
+        },
+      },
+      skip: (currentPage - 1) * itemsPerPage,
+      take: itemsPerPage,
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            displayName: true,
+            s3Key: true,
+          },
+        },
+      },
+    });
+
+    res.status(200).json({ tweets: mostLikedTweets });
+  } catch (error) {
+    console.error("Error fetching feed:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 const getFollowingFeed = async (req, res, next) => {
   const { userId, startIndex } = req.query;
 
@@ -1201,6 +1235,7 @@ module.exports = {
   unfollow,
 
   getForYouFeed,
+  getForYouFeedAllTime,
   getFollowingFeed,
 
   getS3Media,
