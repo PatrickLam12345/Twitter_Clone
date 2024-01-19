@@ -15,4 +15,7 @@ app.use("/api/user", userRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`Listening on port ${process.env.PORT}...`);
+  setInterval(() => {
+    axios.get("https://twitterclonebackend2024.onrender.com/");
+  }, 60 * 1000);
 });

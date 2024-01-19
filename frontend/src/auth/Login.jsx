@@ -126,10 +126,39 @@ export default function Login() {
           },
         }
       );
-      (userInfoResponse.data)
+      userInfoResponse.data;
       dispatch(setUserInfo(userInfoResponse.data));
     } catch (error) {
-      (error);
+      error;
+    }
+  };
+
+  const handleTestLogin = async () => {
+    try {
+      const response = await axios.post(
+        "https://twitterclonebackend2024.onrender.com/api/auth/login",
+        {
+          email: "testUsertestUsertestUser",
+          password: "testUsertestUsertestUser",
+        }
+      );
+
+      const token = response.data;
+
+      window.localStorage.setItem("token", token);
+
+      const userInfoResponse = await axios.get(
+        "https://twitterclonebackend2024.onrender.com/api/auth/getUserInfo",
+        {
+          headers: {
+            authorization: token,
+          },
+        }
+      );
+      userInfoResponse.data;
+      dispatch(setUserInfo(userInfoResponse.data));
+    } catch (error) {
+      error;
     }
   };
 
@@ -190,9 +219,27 @@ export default function Login() {
           border: "1px solid #1d9bf0",
           cursor: "pointer",
           fontWeight: "500",
+          marginBottom: "25px",
         }}
       >
         Register
+      </button>
+      <button
+        onClick={handleTestLogin}
+        style={{
+          backgroundColor: "black",
+          color: "#1d9bf0",
+          borderRadius: "20px",
+          padding: "10px 10px",
+          width: "200px",
+          fontSize: "16px",
+          border: "1px solid #1d9bf0",
+          cursor: "pointer",
+          fontWeight: "500",
+          marginBottom: "25px",
+        }}
+      >
+        Login as Test User
       </button>
       <Modal
         open={openLogin}
