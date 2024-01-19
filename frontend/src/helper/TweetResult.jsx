@@ -21,7 +21,7 @@ export default function TweetResult({ tweet }) {
     const getS3TweetMedia = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:3000/api/user/getS3Media",
+          "https://twitterclonebackend2024.onrender.com/api/user/getS3Media",
           {
             headers: {
               authorization: window.localStorage.getItem("token"),
@@ -53,7 +53,7 @@ export default function TweetResult({ tweet }) {
     const getS3Image = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:3000/api/user/getS3Media",
+          "https://twitterclonebackend2024.onrender.com/api/user/getS3Media",
           {
             headers: {
               authorization: window.localStorage.getItem("token"),

@@ -40,7 +40,7 @@ export default function Home() {
   const getForYouFeed = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getForYouFeed",
+        "https://twitterclonebackend2024.onrender.com/api/user/getForYouFeed",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -55,7 +55,7 @@ export default function Home() {
         setCurrentPage((prevPage) => prevPage + 1);
       } else {
         const response = await axios.get(
-          "http://localhost:3000/api/user/getForYouFeedAllTime",
+          "https://twitterclonebackend2024.onrender.com/api/user/getForYouFeedAllTime",
           {
             headers: {
               authorization: window.localStorage.getItem("token"),
@@ -78,7 +78,7 @@ export default function Home() {
     try {
       if (forYouFeedAllTime) {
         const response = await axios.get(
-          "http://localhost:3000/api/user/getForYouFeedAllTime",
+          "https://twitterclonebackend2024.onrender.com/api/user/getForYouFeedAllTime",
           {
             headers: {
               authorization: window.localStorage.getItem("token"),
@@ -92,7 +92,7 @@ export default function Home() {
         setCurrentPage((prevPage) => prevPage + 1);
       } else {
         const response = await axios.get(
-          "http://localhost:3000/api/user/getForYouFeed",
+          "https://twitterclonebackend2024.onrender.com/api/user/getForYouFeed",
           {
             headers: {
               authorization: window.localStorage.getItem("token"),
@@ -113,7 +113,7 @@ export default function Home() {
   const getFollowingFeed = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getFollowingFeed",
+        "https://twitterclonebackend2024.onrender.com/api/user/getFollowingFeed",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
@@ -134,7 +134,7 @@ export default function Home() {
   const getMoreFollowingFeed = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/getFollowingFeed",
+        "https://twitterclonebackend2024.onrender.com/api/user/getFollowingFeed",
         {
           headers: {
             authorization: window.localStorage.getItem("token"),
