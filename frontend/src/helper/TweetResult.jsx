@@ -79,6 +79,7 @@ export default function TweetResult({ tweet }) {
 
   const formatTimeDifference = () => {
     const now = new Date();
+    console.log(tweet)
     const diffInSeconds = Math.floor((now - new Date(tweet.date)) / 1000);
 
     if (diffInSeconds < 60) {
@@ -93,7 +94,7 @@ export default function TweetResult({ tweet }) {
       const diffInDays = Math.floor(diffInSeconds / 86400);
       return `${diffInDays}d ago`;
     } else {
-      return new Date(date).toLocaleString();
+      return new Date(tweet.date).toLocaleString();
     }
   };
 
