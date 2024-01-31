@@ -19,7 +19,4 @@ app.get("/ping", (req, res) => {
 
 app.listen(process.env.PORT, () => {
   console.log(`Listening on port ${process.env.PORT}...`);
-  setInterval(() => {
-    axios.get("https://twitterclonebackend2024.onrender.com/ping");
-  }, 14 * 60 * 1000);
 });
