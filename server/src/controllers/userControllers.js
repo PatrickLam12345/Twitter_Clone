@@ -967,14 +967,14 @@ const getForYouFeed = async (req, res, next) => {
   const { currentPage } = req.query;
   const itemsPerPage = 8;
   try {
-    const twentyFourHoursAgo = new Date();
-    twentyFourHoursAgo.setHours(twentyFourHoursAgo.getHours() - 24);
+    const pastYear = new Date();
+    pastYear.setHours(pastYear.getFullYear() - 1);
 
     const mostLikedTweets = await prisma.tweet.findMany({
       where: {
         isPost: true,
         date: {
-          gte: twentyFourHoursAgo,
+          gte: pastYear,
         },
       },
       orderBy: {
